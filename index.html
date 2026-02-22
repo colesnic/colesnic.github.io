@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NICK COLES | ENGINEER</title>
+    <style>
+        /* BRUTALIST RESET */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: crosshair;
+        }
+
+        :root {
+            --black: #000000;
+            --white: #ffffff;
+            --neon: #00ff00; /* Matrix Green */
+            --border-thick: 4px solid #000;
+        }
+
+        body {
+            background-color: var(--white);
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--black);
+            line-height: 1.2;
+            padding: 2vw;
+        }
+
+        /* HEADING SECTION */
+        header {
+            border: var(--border-thick);
+            padding: 20px;
+            background-color: var(--neon);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 8vw, 5rem);
+            text-transform: uppercase;
+            font-weight: 900;
+        }
+
+        .status-pill {
+            background: var(--black);
+            color: var(--neon);
+            padding: 5px 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* GRID LAYOUT */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        section {
+            border: var(--border-thick);
+            padding: 20px;
+            transition: transform 0.1s;
+        }
+
+        section:hover {
+            transform: translate(-5px, -5px);
+            box-shadow: 10px 10px 0px var(--black);
+            background-color: #f0f0f0;
+        }
+
+        h2 {
+            background: var(--black);
+            color: var(--white);
+            display: inline-block;
+            padding: 5px 10px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        /* PROJECTS LIST */
+        .item {
+            border-bottom: 2px solid var(--black);
+            padding: 10px 0;
+        }
+
+        .item:last-child { border-bottom: none; }
+
+        .tag {
+            font-size: 0.8rem;
+            border: 1px solid var(--black);
+            padding: 2px 5px;
+            margin-right: 5px;
+            background: #eee;
+        }
+
+        /* MARQUEE EFFECT */
+        .marquee {
+            border: var(--border-thick);
+            background: var(--black);
+            color: var(--white);
+            padding: 10px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            margin-bottom: 20px;
+        }
+
+        .marquee span {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 15s linear infinite;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+        button {
+            background: var(--neon);
+            border: var(--border-thick);
+            padding: 15px 30px;
+            font-family: inherit;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 20px;
+        }
+
+        button:active {
+            transform: translate(2px, 2px);
+            box-shadow: none;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>NICK COLES</h1>
+        <div class="status-pill">// CHICAGO //</div>
+    </header>
+
+    <div class="marquee">
+        <span>SOFTWARE ENGINEER @ JPMORGAN CHASE — WORKING ON AGENTIC AI SYSTEMS IN PAYMENTS — UNIVERSITY OF MICHIGAN COMPUTER SCIENCE ALUMNUS</span>
+    </div>
+
+    <div class="grid-container">
+        <section>
+            <h2>01_PROFILE</h2>
+            <p>Working on agentic AI systems at JPMorgan Chase.</p>
+            <br>
+            <p><strong>POSITION:</strong> SOFTWARE ENGINEER I<br><strong>TEAM:</strong> COMMERCIAL PAYMENTS</p>
+        </section>
+
+        <section>
+            <h2>02_PROJECTS</h2>
+            <div class="item">
+                <p><strong>WIKI RA</strong>(I)<strong>CE</strong></p>
+                <p>COMPETE WITH AN AI AGENT IN A GAME OF WIKI RACE.</p>
+                <span class="tag">AI</span><span class="tag">PYTHON</span>
+            </div>
+            <div class="item">
+                <p><strong>SMALL BUSINESS CONSULTANT</strong></p>
+                <p>HELPING A LAW FIRM USE CHAT GPT TO AUTOMATE LEGAL PROCESSES.</p>
+                <span class="tag">PROMPT ENGINEERING</span><span class="tag">STRATEGY</span>
+            </div>
+        </section>
+
+        <section>
+            <h2>03_EXPERIENCE</h2>
+            <div class="item">
+                <p><strong>JPMORGAN CHASE</strong></p>
+                <p>Software Engineer I</p>
+                <p>2024 - PRESENT</p>
+            </div>
+            <div class="item">
+                <p><strong>UNIVERSITY OF MICHIGAN</strong></p>
+                <p>Studied CS</p>
+                <p>Zeta Pi Tech Fraternity</p>
+            </div>
+        </section>
+
+        <section style="background-color: var(--black); color: var(--white);">
+            <h2 style="background: var(--neon); color: var(--black);">04_CONNECT</h2>
+            <p>colesnic@umich.edu</p>
+        </section>
+    </div>
+
+</body>
+</html>
