@@ -3,521 +3,766 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NICK COLES // INDUSTRIAL UNIT 07</title>
+<title>Nick Coles — Software Engineer, Chicago</title>
 <style>
-    /* ============ RESET ============ */
+    /* ============ RESET / BASE ============ */
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-        --orange: #ff6a00;
-        --orange-hot: #ffa040;
-        --orange-deep: #c24400;
-        --steel-dark: #0c0e10;
-        --steel-mid: #1a1d21;
-        --steel-light: #2c3138;
-        --steel-edge: #3d434c;
+        /* Chicago flag */
+        --flag-blue: #41B6E6;
+        --flag-blue-soft: #7fd0f0;
+        --flag-red: #E4002B;
+        /* night lake */
+        --midnight: #0a1322;
+        --midnight-2: #0e1a2e;
+        --panel: #111f35;
+        --line: #1f3352;
+        --text: #e8ecf2;
+        --muted: #8fa0b5;
+        /* CTA lines */
+        --cta-red: #c60c30;
+        --cta-blue: #00a1de;
+        --cta-brown: #62361b;
+        --cta-green: #009b3a;
+        --cta-orange: #f9461c;
+        --cta-purple: #522398;
     }
 
-    html, body { height: 100%; }
+    html { scroll-behavior: smooth; }
 
     body {
-        background: var(--steel-dark);
-        color: #d8dadd;
-        font-family: 'Courier New', Courier, monospace;
+        background:
+            radial-gradient(1200px 600px at 70% -10%, #16263f 0%, transparent 60%),
+            linear-gradient(180deg, var(--midnight) 0%, var(--midnight-2) 100%);
+        color: var(--text);
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+        line-height: 1.6;
         overflow-x: hidden;
+    }
+
+    .mono { font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace; }
+
+    .wrap { max-width: 1060px; margin: 0 auto; padding: 0 24px; }
+
+    /* ============ HERO ============ */
+    .hero {
         position: relative;
-    }
-
-    /* ============ GLOBAL GRAIN / TEXTURE ============ */
-    body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 100;
-        opacity: 0.5;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.12'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
-    }
-
-    /* faint scanlines for the reflective-screen feel */
-    body::after {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 101;
-        background: repeating-linear-gradient(
-            0deg,
-            transparent 0px,
-            transparent 3px,
-            rgba(0,0,0,0.18) 4px
-        );
-        mix-blend-mode: multiply;
-    }
-
-    /* ============ VERTICAL PIPES (background layer) ============ */
-    .pipes {
-        position: fixed;
-        inset: 0;
-        z-index: 0;
+        padding: 9vh 0 0;
+        min-height: 92vh;
         display: flex;
+        flex-direction: column;
         justify-content: space-between;
-        padding: 0 2vw;
-        pointer-events: none;
     }
 
-    .pipe {
-        position: relative;
-        width: 58px;
-        height: 100%;
-        flex: none;
-        /* cylindrical metal shading */
-        background:
-            linear-gradient(90deg,
-                #08090b 0%,
-                #23272d 12%,
-                #565e69 30%,
-                #aeb6c0 46%,
-                #e8ecf0 50%,
-                #aeb6c0 54%,
-                #565e69 70%,
-                #23272d 88%,
-                #08090b 100%);
-        box-shadow:
-            inset 0 0 6px rgba(0,0,0,0.6),
-            8px 0 24px rgba(0,0,0,0.55);
-    }
-
-    .pipe.orange {
-        background:
-            linear-gradient(90deg,
-                #2a0e00 0%,
-                #7a2f00 12%,
-                #cf5a00 30%,
-                #ff9b3d 46%,
-                #ffd9a8 50%,
-                #ff9b3d 54%,
-                #cf5a00 70%,
-                #7a2f00 88%,
-                #2a0e00 100%);
-        box-shadow:
-            inset 0 0 6px rgba(0,0,0,0.6),
-            0 0 35px rgba(255,106,0,0.28),
-            8px 0 24px rgba(0,0,0,0.55);
-    }
-
-    .pipe.thin { width: 26px; }
-
-    /* moving sheen sliding down each pipe */
-    .pipe::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(180deg,
-            transparent 0%,
-            rgba(255,255,255,0.0) 35%,
-            rgba(255,255,255,0.35) 50%,
-            rgba(255,255,255,0.0) 65%,
-            transparent 100%);
-        background-size: 100% 300%;
-        animation: sheen 7s linear infinite;
-        mix-blend-mode: screen;
-    }
-
-    .pipe:nth-child(2)::before { animation-delay: -2s; }
-    .pipe:nth-child(3)::before { animation-delay: -4s; }
-    .pipe:nth-child(4)::before { animation-delay: -1s; }
-    .pipe:nth-child(5)::before { animation-delay: -5s; }
-    .pipe:nth-child(6)::before { animation-delay: -3s; }
-
-    @keyframes sheen {
-        0%   { background-position: 0 -150%; }
-        100% { background-position: 0 150%; }
-    }
-
-    /* pipe couplings / flange rings */
-    .pipe::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background:
-            repeating-linear-gradient(180deg,
-                transparent 0px,
-                transparent 160px,
-                rgba(0,0,0,0.55) 160px,
-                rgba(0,0,0,0.55) 164px,
-                rgba(255,255,255,0.30) 164px,
-                rgba(255,255,255,0.30) 168px,
-                rgba(0,0,0,0.45) 168px,
-                rgba(0,0,0,0.45) 178px,
-                rgba(255,255,255,0.18) 178px,
-                rgba(255,255,255,0.18) 180px,
-                transparent 180px,
-                transparent 184px);
-    }
-
-    @media (max-width: 900px) {
-        .pipe:nth-child(n+5) { display: none; }
-    }
-    @media (max-width: 600px) {
-        .pipe:nth-child(n+3) { display: none; }
-    }
-
-    /* ============ MAIN PLATE ============ */
-    main {
-        position: relative;
-        z-index: 10;
-        max-width: 980px;
-        margin: 6vh auto;
-        padding: 0 20px;
-    }
-
-    .plate {
-        position: relative;
-        background:
-            linear-gradient(160deg, var(--steel-light) 0%, var(--steel-mid) 35%, #14171a 100%);
-        border: 1px solid var(--steel-edge);
-        border-top-color: #555c66;
-        box-shadow:
-            0 30px 80px rgba(0,0,0,0.8),
-            inset 0 1px 0 rgba(255,255,255,0.10),
-            inset 0 -2px 12px rgba(0,0,0,0.6);
-        padding: 48px 44px;
-        margin-bottom: 28px;
-        /* brushed metal texture */
-        background-blend-mode: overlay;
-    }
-
-    .plate::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        background: repeating-linear-gradient(
-            90deg,
-            rgba(255,255,255,0.025) 0px,
-            rgba(255,255,255,0.025) 1px,
-            transparent 1px,
-            transparent 3px
-        );
-    }
-
-    /* rivets in plate corners */
-    .rivet {
-        position: absolute;
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        background: radial-gradient(circle at 35% 30%, #cfd5dc 0%, #6b737e 45%, #20242a 100%);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.8), inset 0 -1px 2px rgba(0,0,0,0.6);
-    }
-    .rivet.tl { top: 12px; left: 12px; }
-    .rivet.tr { top: 12px; right: 12px; }
-    .rivet.bl { bottom: 12px; left: 12px; }
-    .rivet.br { bottom: 12px; right: 12px; }
-
-    /* ============ HAZARD STRIPE ============ */
-    .hazard {
-        height: 18px;
-        background: repeating-linear-gradient(
-            45deg,
-            var(--orange) 0px,
-            var(--orange) 20px,
-            #111 20px,
-            #111 40px
-        );
-        border-top: 1px solid rgba(255,255,255,0.15);
-        border-bottom: 1px solid rgba(0,0,0,0.8);
-        box-shadow: 0 0 24px rgba(255,106,0,0.25);
-        margin: -48px -44px 40px -44px;
-    }
-
-    /* ============ HEADER / TITLE ============ */
-    .unit-tag {
-        font-size: 0.75rem;
-        letter-spacing: 0.35em;
-        color: var(--orange-hot);
+    .locator {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.78rem;
+        letter-spacing: 0.28em;
         text-transform: uppercase;
-        margin-bottom: 14px;
+        color: var(--flag-blue-soft);
     }
 
-    .unit-tag .blink {
-        animation: blink 1.2s steps(2) infinite;
-    }
-    @keyframes blink { 50% { opacity: 0; } }
+    .stars { color: var(--flag-red); font-size: 1rem; letter-spacing: 0.35em; }
 
     h1 {
-        font-size: clamp(2.4rem, 8vw, 5.2rem);
-        line-height: 0.95;
-        text-transform: uppercase;
-        font-weight: 900;
-        letter-spacing: 0.02em;
-        /* reflective molten-orange metal text */
-        background: linear-gradient(180deg,
-            #fff3e0 0%,
-            #ffc176 22%,
-            var(--orange) 45%,
-            #952f00 55%,
-            var(--orange-deep) 62%,
-            #ffae5c 78%,
-            #fff3e0 100%);
-        background-size: 100% 220%;
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-        animation: molten 6s ease-in-out infinite alternate;
-        filter: drop-shadow(0 0 18px rgba(255,106,0,0.45))
-                drop-shadow(0 4px 2px rgba(0,0,0,0.9));
+        margin-top: 22px;
+        font-size: clamp(3rem, 10vw, 7rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.0;
     }
 
-    @keyframes molten {
-        0%   { background-position: 0 0%; }
-        100% { background-position: 0 100%; }
-    }
+    h1 .blue { color: var(--flag-blue); }
 
-    .subtitle {
+    .role {
         margin-top: 18px;
-        font-size: clamp(0.8rem, 2vw, 1rem);
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: #9aa1aa;
+        font-size: clamp(1rem, 2.4vw, 1.3rem);
+        color: var(--muted);
+        max-width: 560px;
     }
-    .subtitle b { color: var(--orange-hot); }
+    .role strong { color: var(--text); font-weight: 600; }
 
-    /* ============ DATA PANELS ============ */
-    .panel-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-        gap: 22px;
-        position: relative;
-        z-index: 10;
-    }
-
-    .panel {
-        position: relative;
-        background: linear-gradient(170deg, #22262b 0%, #15181c 60%, #0e1013 100%);
-        border: 1px solid var(--steel-edge);
-        border-left: 4px solid var(--orange);
-        padding: 26px 24px 30px;
-        box-shadow:
-            0 18px 40px rgba(0,0,0,0.7),
-            inset 0 1px 0 rgba(255,255,255,0.08);
-        transition: transform 0.15s ease, box-shadow 0.15s ease, border-left-color 0.15s ease;
-    }
-
-    .panel::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        background: repeating-linear-gradient(
-            90deg,
-            rgba(255,255,255,0.02) 0px,
-            rgba(255,255,255,0.02) 1px,
-            transparent 1px,
-            transparent 3px
-        );
-    }
-
-    .panel:hover {
-        transform: translateY(-4px);
-        border-left-color: var(--orange-hot);
-        box-shadow:
-            0 26px 50px rgba(0,0,0,0.8),
-            0 0 30px rgba(255,106,0,0.18),
-            inset 0 1px 0 rgba(255,255,255,0.10);
-    }
-
-    .panel h2 {
-        font-size: 0.8rem;
-        letter-spacing: 0.3em;
-        text-transform: uppercase;
-        color: var(--orange);
-        border-bottom: 1px solid #3a4047;
-        padding-bottom: 10px;
-        margin-bottom: 16px;
-    }
-
-    .panel p { font-size: 0.92rem; line-height: 1.55; color: #c3c8ce; }
-
-    .row {
-        border-bottom: 1px dashed #343a42;
-        padding: 12px 0;
-    }
-    .row:last-child { border-bottom: none; padding-bottom: 0; }
-
-    .row strong {
-        color: #f0f2f4;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        display: block;
-        margin-bottom: 4px;
-    }
-
-    .tag {
+    /* CTA-style arrival board */
+    .board {
+        margin-top: 38px;
         display: inline-block;
-        font-size: 0.68rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--orange-hot);
-        border: 1px solid var(--orange-deep);
-        background: rgba(255,106,0,0.08);
-        padding: 3px 8px;
-        margin: 8px 6px 0 0;
+        background: #0b0e14;
+        border: 1px solid #243049;
+        border-radius: 10px;
+        padding: 14px 20px;
+        box-shadow: 0 12px 36px rgba(0,0,0,0.45), inset 0 0 24px rgba(0,0,0,0.6);
     }
 
-    .gauge-line {
+    .board .row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: clamp(0.72rem, 1.8vw, 0.92rem);
+        letter-spacing: 0.06em;
+        color: #ffb324; /* CTA LED amber */
+        text-shadow: 0 0 10px rgba(255,179,36,0.55);
+        white-space: nowrap;
+    }
+
+    .board .due {
+        animation: due-blink 1.6s steps(2) infinite;
+    }
+    @keyframes due-blink { 50% { opacity: 0.25; } }
+
+    .board .dot {
+        width: 9px; height: 9px; border-radius: 50%;
+        background: #ffb324;
+        box-shadow: 0 0 8px rgba(255,179,36,0.8);
+        flex: none;
+    }
+
+    .board-head {
         display: flex;
         align-items: center;
         gap: 10px;
-        margin-top: 14px;
-        font-size: 0.7rem;
-        letter-spacing: 0.2em;
-        color: #7d848d;
+        font-size: 0.66rem;
+        letter-spacing: 0.22em;
         text-transform: uppercase;
+        color: #8fa0b5;
+        border-bottom: 1px solid #243049;
+        padding-bottom: 9px;
+        margin-bottom: 10px;
     }
 
-    .gauge {
+    .board-head .updated { margin-left: auto; letter-spacing: 0.08em; }
+
+    .board .arrival {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        padding: 4px 0;
+        min-width: min(380px, 72vw);
+    }
+
+    .board .rt {
+        flex: none;
+        width: 44px;
+        text-align: center;
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        color: #fff;
+        border-radius: 4px;
+        padding: 3px 0;
+        text-shadow: none;
+        align-self: center;
+    }
+
+    .board .dest {
         flex: 1;
-        height: 8px;
-        background: #0a0c0e;
-        border: 1px solid #3a4047;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .board .eta { flex: none; min-width: 58px; text-align: right; }
+
+    /* ============ SKYLINE ============ */
+    .skyline {
+        position: relative;
+        margin-top: 60px;
+        line-height: 0;
+    }
+
+    .skyline svg { width: 100%; height: auto; display: block; }
+
+    .skyline .win {
+        fill: #ffd98a;
+        opacity: 0.85;
+        animation: twinkle 4s ease-in-out infinite;
+    }
+    .skyline .win:nth-of-type(3n)  { animation-delay: -1.3s; }
+    .skyline .win:nth-of-type(4n)  { animation-delay: -2.6s; }
+    .skyline .win:nth-of-type(5n)  { animation-delay: -0.7s; animation-duration: 5.5s; }
+    .skyline .win:nth-of-type(7n)  { animation-delay: -3.4s; }
+
+    @keyframes twinkle {
+        0%, 100% { opacity: 0.85; }
+        50% { opacity: 0.15; }
+    }
+
+    .beacon {
+        fill: var(--flag-red);
+        animation: beacon 2.4s ease-in-out infinite;
+    }
+    @keyframes beacon {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.1; }
+    }
+
+    /* lake shimmer under skyline */
+    .lake {
+        height: 64px;
+        background:
+            linear-gradient(180deg, #14263e 0%, #0a141f 100%);
+        position: relative;
         overflow: hidden;
     }
-
-    .gauge i {
-        display: block;
-        height: 100%;
-        background: linear-gradient(90deg, var(--orange-deep), var(--orange), var(--orange-hot));
-        box-shadow: 0 0 12px rgba(255,106,0,0.6);
-        animation: pressure 3.4s ease-in-out infinite alternate;
+    .lake::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+            180deg,
+            rgba(65,182,230,0.10) 0 2px,
+            transparent 2px 7px
+        );
+        animation: shimmer 6s linear infinite;
+    }
+    @keyframes shimmer {
+        from { transform: translateY(0); }
+        to   { transform: translateY(7px); }
     }
 
-    .g1 i { width: 86%; }
-    .g2 i { width: 72%; animation-delay: -1.2s; }
-    .g3 i { width: 94%; animation-delay: -2.1s; }
-
-    @keyframes pressure {
-        from { transform: scaleX(0.96); transform-origin: left; }
-        to   { transform: scaleX(1.0);  transform-origin: left; }
+    /* ============ FLAG DIVIDER ============ */
+    .flag-divider {
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+        gap: 10px;
+        padding: 26px 0;
+        background: #f4f1ea;
+    }
+    .flag-divider .stripe { height: 16px; background: var(--flag-blue); }
+    .flag-divider .star-row {
+        grid-row: 1 / 3;
+        display: none;
     }
 
-    /* ============ CONNECT / FOOTER ============ */
-    .connect {
-        grid-column: 1 / -1;
+    /* simpler: true flag proportions */
+    .flag {
+        background: #f4f1ea;
+        padding: 18px 0;
+    }
+    .flag .inner {
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
+        gap: 0;
+    }
+    .flag .stripe { height: 14px; background: var(--flag-blue); }
+    .flag .field {
+        height: 34px;
+        display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 18px;
+        justify-content: center;
+        gap: 26px;
+        color: var(--flag-red);
+        font-size: 1.5rem;
+        line-height: 1;
     }
 
-    .connect a {
-        color: var(--orange-hot);
-        text-decoration: none;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        font-weight: bold;
-        border: 1px solid var(--orange-deep);
-        background: linear-gradient(180deg, rgba(255,106,0,0.16), rgba(255,106,0,0.04));
-        padding: 12px 22px;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
-        transition: all 0.15s ease;
+    /* ============ TRANSIT SECTIONS ============ */
+    .route { position: relative; padding: 80px 0 40px; }
+
+    .route-line {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 6px;
+        transform: translateX(-50%);
+        background: linear-gradient(180deg,
+            var(--cta-red) 0 25%,
+            var(--cta-blue) 25% 50%,
+            var(--cta-green) 50% 75%,
+            var(--cta-purple) 75% 100%);
+        border-radius: 3px;
+        opacity: 0.9;
     }
 
-    .connect a:hover {
-        background: linear-gradient(180deg, var(--orange-hot), var(--orange-deep));
-        color: #0c0e10;
-        box-shadow: 0 0 26px rgba(255,106,0,0.5);
+    /* little train running down the line */
+    .train {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 14px;
+        height: 26px;
+        background: #e8ecf2;
+        border-radius: 4px;
+        box-shadow: 0 0 14px rgba(232,236,242,0.8);
+        animation: ride 14s linear infinite;
+    }
+    @keyframes ride {
+        0%   { top: 0%;  opacity: 0; }
+        4%   { opacity: 1; }
+        22%  { top: 24%; }
+        26%  { top: 24%; } /* dwell at station */
+        47%  { top: 49%; }
+        51%  { top: 49%; }
+        72%  { top: 74%; }
+        76%  { top: 74%; }
+        96%  { top: 99%; opacity: 1; }
+        100% { top: 100%; opacity: 0; }
     }
 
-    footer {
+    .station {
         position: relative;
-        z-index: 10;
-        text-align: center;
-        font-size: 0.65rem;
-        letter-spacing: 0.4em;
+        width: min(460px, 86vw);
+        margin: 0 0 110px;
+        background: linear-gradient(180deg, #142440 0%, var(--panel) 100%);
+        border: 1px solid #22344f;
+        border-radius: 14px;
+        padding: 26px 26px 28px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+    }
+
+    .station:nth-of-type(odd)  { margin-right: auto; margin-left: calc(50% - min(460px,86vw) - 48px); }
+    .station:nth-of-type(even) { margin-left: calc(50% + 48px); }
+
+    /* stop marker on the line */
+    .station::before {
+        content: "";
+        position: absolute;
+        top: 32px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #fff;
+        border: 5px solid var(--stop, var(--cta-red));
+        box-shadow: 0 0 0 4px rgba(255,255,255,0.08);
+    }
+    .station:nth-of-type(odd)::before  { right: -67px; }
+    .station:nth-of-type(even)::before { left: -67px; }
+
+    /* connector from card to line */
+    .station::after {
+        content: "";
+        position: absolute;
+        top: 39px;
+        width: 48px;
+        height: 2px;
+        background: #2a3d5c;
+    }
+    .station:nth-of-type(odd)::after  { right: -48px; }
+    .station:nth-of-type(even)::after { left: -48px; }
+
+    .station h2 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.26em;
         text-transform: uppercase;
-        color: #5c636c;
-        padding: 40px 0 60px;
+        color: var(--muted);
+        margin-bottom: 16px;
+    }
+
+    .line-chip {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.68rem;
+        letter-spacing: 0.14em;
+        color: #fff;
+        background: var(--stop, var(--cta-red));
+    }
+
+    .station h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin-bottom: 6px;
+    }
+
+    .station p { color: var(--muted); font-size: 0.95rem; }
+    .station p strong { color: var(--text); }
+
+    .entry { padding: 14px 0; border-bottom: 1px solid #1e3050; }
+    .entry:last-child { border-bottom: none; padding-bottom: 0; }
+    .entry:first-of-type { padding-top: 0; }
+
+    .tags { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+        font-size: 0.68rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--flag-blue-soft);
+        border: 1px solid #2a4a66;
+        background: rgba(65,182,230,0.08);
+        padding: 4px 10px;
+        border-radius: 999px;
+    }
+
+    .btn {
+        display: inline-block;
+        margin-top: 16px;
+        padding: 12px 26px;
+        border-radius: 10px;
+        background: var(--flag-blue);
+        color: #06121f;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-decoration: none;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(65,182,230,0.35);
+    }
+
+    /* station accent colors */
+    .s-profile  { --stop: var(--cta-red); }
+    .s-projects { --stop: var(--cta-blue); }
+    .s-exp      { --stop: var(--cta-green); }
+    .s-connect  { --stop: var(--cta-purple); }
+
+    /* ============ FOOTER ============ */
+    footer {
+        text-align: center;
+        padding: 30px 20px 60px;
+        color: var(--muted);
+        font-size: 0.8rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+    }
+    footer .stars { display: block; margin-bottom: 10px; }
+
+    /* ============ MOBILE ============ */
+    @media (max-width: 760px) {
+        .route-line, .train { left: 18px; transform: none; }
+        .station,
+        .station:nth-of-type(odd),
+        .station:nth-of-type(even) {
+            margin-left: 52px;
+            margin-right: 0;
+            width: auto;
+        }
+        .station:nth-of-type(odd)::before,
+        .station:nth-of-type(even)::before { left: -43px; right: auto; }
+        .station:nth-of-type(odd)::after,
+        .station:nth-of-type(even)::after { left: -34px; right: auto; width: 34px; }
+        .board .row { white-space: normal; }
     }
 </style>
 </head>
 <body>
 
-    <!-- BACKGROUND PIPEWORK -->
-    <div class="pipes" aria-hidden="true">
-        <div class="pipe"></div>
-        <div class="pipe thin orange"></div>
-        <div class="pipe orange"></div>
-        <div class="pipe thin"></div>
-        <div class="pipe"></div>
-        <div class="pipe thin orange"></div>
+    <!-- ============ HERO ============ -->
+    <div class="hero">
+        <div class="wrap">
+            <div class="locator mono">
+                <span class="stars">✶ ✶ ✶ ✶</span>
+                <span>Chicago, Illinois — 41.8781° N, 87.6298° W</span>
+            </div>
+
+            <h1>Nick<br><span class="blue">Coles</span></h1>
+
+            <p class="role">Software engineer building <strong>agentic AI systems</strong> in commercial payments at JPMorgan Chase. Midwest roots, modern stack.</p>
+
+            <div class="board mono">
+                <div class="board-head">
+                    <span class="dot"></span>
+                    <span>Clark/Lake · Train Arrivals</span>
+                    <span class="updated" id="board-updated"></span>
+                </div>
+                <div id="board-rows">
+                    <div class="row">
+                        <span>1&nbsp; ENGINEER toward THE LOOP</span>
+                        <span class="due">DUE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- skyline -->
+        <div class="skyline" aria-hidden="true">
+            <svg viewBox="0 0 1440 300" preserveAspectRatio="xMidYMax slice">
+                <!-- sky glow -->
+                <defs>
+                    <linearGradient id="bldg" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stop-color="#16243a"/>
+                        <stop offset="1" stop-color="#0a1322"/>
+                    </linearGradient>
+                </defs>
+
+                <!-- back row -->
+                <g fill="#101d31">
+                    <rect x="40"  y="150" width="60" height="150"/>
+                    <rect x="150" y="120" width="48" height="180"/>
+                    <rect x="350" y="135" width="70" height="165"/>
+                    <rect x="560" y="110" width="46" height="190"/>
+                    <rect x="760" y="140" width="64" height="160"/>
+                    <rect x="980" y="125" width="52" height="175"/>
+                    <rect x="1180" y="145" width="66" height="155"/>
+                    <rect x="1340" y="120" width="50" height="180"/>
+                </g>
+
+                <!-- WILLIS TOWER (stepped, two antennas) -->
+                <g fill="url(#bldg)">
+                    <rect x="620" y="40"  width="56" height="260"/>
+                    <rect x="604" y="90"  width="16" height="210"/>
+                    <rect x="676" y="90"  width="16" height="210"/>
+                    <rect x="590" y="150" width="14" height="150"/>
+                    <rect x="692" y="150" width="14" height="150"/>
+                    <rect x="632" y="6"   width="3"  height="34"/>
+                    <rect x="660" y="6"   width="3"  height="34"/>
+                </g>
+                <circle class="beacon" cx="633.5" cy="6" r="3"/>
+                <circle class="beacon" cx="661.5" cy="6" r="3" style="animation-delay:-1.2s"/>
+
+                <!-- HANCOCK (tapered + antennas) -->
+                <g fill="url(#bldg)">
+                    <polygon points="220,300 248,70 296,70 324,300"/>
+                    <rect x="258" y="34" width="3" height="36"/>
+                    <rect x="283" y="34" width="3" height="36"/>
+                </g>
+                <circle class="beacon" cx="259.5" cy="34" r="3" style="animation-delay:-0.6s"/>
+                <circle class="beacon" cx="284.5" cy="34" r="3" style="animation-delay:-1.8s"/>
+                <!-- X bracing hint -->
+                <g stroke="#22344f" stroke-width="2" opacity="0.8">
+                    <line x1="252" y1="110" x2="312" y2="180"/>
+                    <line x1="292" y1="110" x2="232" y2="180"/>
+                    <line x1="240" y1="190" x2="308" y2="262"/>
+                    <line x1="304" y1="190" x2="236" y2="262"/>
+                </g>
+
+                <!-- MARINA CITY (corncobs) -->
+                <g fill="url(#bldg)">
+                    <rect x="850" y="120" width="44" height="180" rx="20"/>
+                    <rect x="906" y="120" width="44" height="180" rx="20"/>
+                </g>
+
+                <!-- AON CENTER -->
+                <rect fill="url(#bldg)" x="1050" y="70" width="50" height="230"/>
+                <g stroke="#22344f" stroke-width="2">
+                    <line x1="1060" y1="70" x2="1060" y2="300"/>
+                    <line x1="1075" y1="70" x2="1075" y2="300"/>
+                    <line x1="1090" y1="70" x2="1090" y2="300"/>
+                </g>
+
+                <!-- TRUMP-ish spire tower -->
+                <g fill="url(#bldg)">
+                    <rect x="450" y="95" width="58" height="205"/>
+                    <rect x="470" y="55" width="18" height="40"/>
+                    <rect x="478" y="20" width="3"  height="35"/>
+                </g>
+                <circle class="beacon" cx="479.5" cy="20" r="3" style="animation-delay:-2.1s"/>
+
+                <!-- mid towers -->
+                <g fill="url(#bldg)">
+                    <rect x="100" y="180" width="44" height="120"/>
+                    <rect x="380" y="170" width="40" height="130"/>
+                    <rect x="730" y="170" width="36" height="130"/>
+                    <rect x="1130" y="160" width="40" height="140"/>
+                    <rect x="1250" y="100" width="56" height="200"/>
+                    <rect x="1390" y="160" width="44" height="140"/>
+                    <rect x="0" y="190" width="50" height="110"/>
+                </g>
+
+                <!-- windows -->
+                <g>
+                    <rect class="win" x="632" y="70"  width="5" height="7"/>
+                    <rect class="win" x="650" y="100" width="5" height="7"/>
+                    <rect class="win" x="640" y="150" width="5" height="7"/>
+                    <rect class="win" x="660" y="190" width="5" height="7"/>
+                    <rect class="win" x="630" y="230" width="5" height="7"/>
+                    <rect class="win" x="262" y="100" width="5" height="7"/>
+                    <rect class="win" x="282" y="140" width="5" height="7"/>
+                    <rect class="win" x="270" y="200" width="5" height="7"/>
+                    <rect class="win" x="295" y="240" width="5" height="7"/>
+                    <rect class="win" x="465" y="120" width="5" height="7"/>
+                    <rect class="win" x="488" y="160" width="5" height="7"/>
+                    <rect class="win" x="470" y="220" width="5" height="7"/>
+                    <rect class="win" x="862" y="150" width="5" height="6"/>
+                    <rect class="win" x="880" y="190" width="5" height="6"/>
+                    <rect class="win" x="918" y="170" width="5" height="6"/>
+                    <rect class="win" x="934" y="230" width="5" height="6"/>
+                    <rect class="win" x="1062" y="100" width="5" height="7"/>
+                    <rect class="win" x="1080" y="150" width="5" height="7"/>
+                    <rect class="win" x="1066" y="210" width="5" height="7"/>
+                    <rect class="win" x="1262" y="130" width="5" height="7"/>
+                    <rect class="win" x="1284" y="180" width="5" height="7"/>
+                    <rect class="win" x="1268" y="240" width="5" height="7"/>
+                    <rect class="win" x="115" y="210" width="5" height="6"/>
+                    <rect class="win" x="392" y="195" width="5" height="6"/>
+                    <rect class="win" x="742" y="200" width="5" height="6"/>
+                    <rect class="win" x="1142" y="190" width="5" height="6"/>
+                    <rect class="win" x="1400" y="190" width="5" height="6"/>
+                    <rect class="win" x="60"  y="180" width="5" height="6"/>
+                    <rect class="win" x="170" y="150" width="5" height="6"/>
+                    <rect class="win" x="580" y="140" width="5" height="6"/>
+                </g>
+            </svg>
+        </div>
+        <div class="lake" aria-hidden="true"></div>
     </div>
 
-    <main>
-        <div class="plate">
-            <div class="hazard"></div>
-            <span class="rivet tl"></span><span class="rivet tr"></span>
-            <span class="rivet bl"></span><span class="rivet br"></span>
-
-            <p class="unit-tag">SYS.ONLINE <span class="blink">▮</span> // UNIT_07 // CHICAGO FACILITY</p>
-            <h1>Nick<br>Coles</h1>
-            <p class="subtitle">SOFTWARE ENGINEER — <b>AGENTIC AI SYSTEMS</b> @ JPMORGAN CHASE</p>
-
-            <div class="gauge-line g1"><span>PWR</span><div class="gauge"><i></i></div></div>
-            <div class="gauge-line g2"><span>TMP</span><div class="gauge"><i></i></div></div>
-            <div class="gauge-line g3"><span>SYS</span><div class="gauge"><i></i></div></div>
+    <!-- ============ CHICAGO FLAG ============ -->
+    <div class="flag" aria-label="Flag of Chicago">
+        <div class="inner">
+            <div class="stripe"></div>
+            <div class="field">✶ ✶ ✶ ✶</div>
+            <div class="stripe"></div>
         </div>
+    </div>
 
-        <div class="panel-grid">
-            <section class="panel">
-                <h2>01 / Profile</h2>
-                <p>Building agentic AI systems for commercial payments at JPMorgan Chase.</p>
-                <div class="row">
-                    <strong>Position</strong>
-                    <p>Software Engineer I</p>
-                </div>
-                <div class="row">
-                    <strong>Team</strong>
-                    <p>Commercial Payments</p>
-                </div>
-            </section>
+    <!-- ============ ROUTE ============ -->
+    <div class="route wrap">
+        <div class="route-line" aria-hidden="true"></div>
+        <div class="train" aria-hidden="true"></div>
 
-            <section class="panel">
-                <h2>02 / Projects</h2>
-                <div class="row">
-                    <strong>Wiki Ra(i)ce</strong>
-                    <p>Compete against an AI agent in a game of Wiki Race.</p>
-                    <span class="tag">AI</span><span class="tag">Python</span>
-                </div>
-                <div class="row">
-                    <strong>Small Business Consultant</strong>
-                    <p>Helping a law firm automate legal processes with LLMs.</p>
-                    <span class="tag">Prompt Engineering</span><span class="tag">Strategy</span>
-                </div>
-            </section>
+        <section class="station s-profile">
+            <h2><span class="line-chip">Red Line</span> 01 · Profile</h2>
+            <h3>Software Engineer I</h3>
+            <p>Building <strong>agentic AI systems</strong> on the Commercial Payments team at <strong>JPMorgan Chase</strong>. Shipping pragmatic AI — no hype, just working software.</p>
+        </section>
 
-            <section class="panel">
-                <h2>03 / Experience</h2>
-                <div class="row">
-                    <strong>JPMorgan Chase</strong>
-                    <p>Software Engineer I — 2024 → Present</p>
-                </div>
-                <div class="row">
-                    <strong>University of Michigan</strong>
-                    <p>Computer Science — Zeta Pi Tech Fraternity</p>
-                </div>
-            </section>
+        <section class="station s-projects">
+            <h2><span class="line-chip" style="background:var(--cta-blue)">Blue Line</span> 02 · Projects</h2>
+            <div class="entry">
+                <h3>Wiki Ra(i)ce</h3>
+                <p>Race an AI agent through Wikipedia, link by link. May the best navigator win.</p>
+                <div class="tags"><span class="tag">AI</span><span class="tag">Python</span></div>
+            </div>
+            <div class="entry">
+                <h3>Small Business Consultant</h3>
+                <p>Helped a law firm put LLMs to work automating legal processes.</p>
+                <div class="tags"><span class="tag">Prompt Engineering</span><span class="tag">Strategy</span></div>
+            </div>
+        </section>
 
-            <section class="panel connect">
-                <h2 style="border: none; margin: 0; padding: 0;">04 / Connect</h2>
-                <a href="mailto:colesnic@umich.edu">colesnic@umich.edu</a>
-            </section>
-        </div>
+        <section class="station s-exp">
+            <h2><span class="line-chip" style="background:var(--cta-green)">Green Line</span> 03 · Experience</h2>
+            <div class="entry">
+                <h3>JPMorgan Chase</h3>
+                <p>Software Engineer I · 2024 — Present</p>
+            </div>
+            <div class="entry">
+                <h3>University of Michigan</h3>
+                <p>Computer Science · Zeta Pi Tech Fraternity</p>
+            </div>
+        </section>
 
-        <footer>— PRESSURE NOMINAL // ALL SYSTEMS OPERATIONAL —</footer>
-    </main>
+        <section class="station s-connect">
+            <h2><span class="line-chip" style="background:var(--cta-purple)">Purple Line</span> 04 · Connect</h2>
+            <h3>Say hi</h3>
+            <p>Always up for talking AI, payments, or where to get the best Italian beef.</p>
+            <a class="btn" href="mailto:colesnic@umich.edu">colesnic@umich.edu</a>
+        </section>
+    </div>
+
+    <footer>
+        <span class="stars" style="color:var(--flag-red)">✶ ✶ ✶ ✶</span>
+        Made in Chicago · City of Big Shoulders
+    </footer>
+
+    <script>
+    (function () {
+        var KEY = "459a48123f7c40b5b22606d9a4a75e61";
+        var MAPID = "40380"; /* Clark/Lake */
+        var API = "https://lapi.transitchicago.com/api/1.0/ttarrivals.aspx?key=" + KEY +
+                  "&mapid=" + MAPID + "&max=10&outputType=JSON";
+
+        /* Primary source: arrivals.json refreshed every ~5 min by a GitHub
+           Actions cron (see .github/workflows/cta-arrivals.yml) — served with
+           CORS headers from raw.githubusercontent.com. The CTA API itself has
+           no CORS headers, so direct browser calls need a public proxy; we
+           try those as a freshness backup. */
+        var SOURCES = [
+            { url: "https://raw.githubusercontent.com/colesnic/colesnic.github.io/cta-data/arrivals.json",
+              headers: {} },
+            { url: "https://api.allorigins.win/raw?url=" + encodeURIComponent(API),
+              headers: {} },
+            { url: "https://api.cors.lol/?url=" + encodeURIComponent(API),
+              headers: {} }
+        ];
+
+        var LINE_COLORS = {
+            "Red": "#c60c30", "Blue": "#00a1de", "Brn": "#62361b", "G": "#009b3a",
+            "Org": "#f9461c", "P": "#522398", "Pink": "#e27ea6", "Y": "#f9e300"
+        };
+        var LINE_NAMES = {
+            "Red": "RED", "Blue": "BLUE", "Brn": "BRN", "G": "GRN",
+            "Org": "ORG", "P": "PUR", "Pink": "PNK", "Y": "YEL"
+        };
+
+        /* CTA timestamps are Chicago wall-clock with no timezone marker, so
+           compare them against "now" expressed the same way. */
+        function nowChicago() {
+            return new Date(new Date().toLocaleString("en-US", { timeZone: "America/Chicago" }));
+        }
+
+        function fetchWithTimeout(src, ms) {
+            var ctrl = new AbortController();
+            var t = setTimeout(function () { ctrl.abort(); }, ms);
+            return fetch(src.url, { headers: src.headers, signal: ctrl.signal, cache: "no-store" })
+                .finally(function () { clearTimeout(t); });
+        }
+
+        function getArrivals(i) {
+            i = i || 0;
+            if (i >= SOURCES.length) return Promise.resolve(null);
+            return fetchWithTimeout(SOURCES[i], 8000)
+                .then(function (r) {
+                    if (!r.ok) throw new Error(r.status);
+                    return r.json();
+                })
+                .then(function (j) {
+                    if (j && j.ctatt && j.ctatt.errCd === "0" && j.ctatt.eta) return j.ctatt;
+                    throw new Error("bad payload");
+                })
+                .catch(function () { return getArrivals(i + 1); });
+        }
+
+        function render(ctatt) {
+            var rows = document.getElementById("board-rows");
+            var updated = document.getElementById("board-updated");
+            if (!ctatt) return;
+
+            var now = nowChicago();
+
+            /* drop trains that already arrived (data may be a few min old) */
+            var upcoming = ctatt.eta.filter(function (eta) {
+                return (new Date(eta.arrT) - now) / 60000 > -0.5;
+            }).slice(0, 4);
+            if (!upcoming.length) return;
+
+            rows.innerHTML = "";
+            upcoming.forEach(function (eta) {
+                var mins = (new Date(eta.arrT) - now) / 60000;
+                var label = (eta.isApp === "1" || mins < 1.5) ? "DUE" : Math.round(mins) + " min";
+
+                var row = document.createElement("div");
+                row.className = "row arrival";
+
+                var rt = document.createElement("span");
+                rt.className = "rt";
+                rt.textContent = LINE_NAMES[eta.rt] || eta.rt.toUpperCase();
+                rt.style.background = LINE_COLORS[eta.rt] || "#555";
+                if (eta.rt === "Y") rt.style.color = "#111";
+
+                var dest = document.createElement("span");
+                dest.className = "dest";
+                dest.textContent = "to " + eta.destNm + (eta.isDly === "1" ? " · DELAYED" : "");
+
+                var time = document.createElement("span");
+                time.className = "eta";
+                time.textContent = label;
+                if (label === "DUE") time.className += " due";
+
+                row.appendChild(rt);
+                row.appendChild(dest);
+                row.appendChild(time);
+                rows.appendChild(row);
+            });
+
+            var t = new Date(ctatt.tmst).toLocaleTimeString("en-US",
+                { hour: "numeric", minute: "2-digit" });
+            updated.textContent = "CTA · AS OF " + t;
+        }
+
+        function refresh() { getArrivals().then(render); }
+        refresh();
+        setInterval(refresh, 60000);
+    })();
+    </script>
 
 </body>
 </html>

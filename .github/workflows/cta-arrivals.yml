@@ -1,0 +1,36 @@
+name: CTA arrivals data
+
+# Fetches live CTA Train Tracker arrivals for Clark/Lake and publishes them
+# to the `cta-data` branch as arrivals.json. The site reads it from
+# raw.githubusercontent.com (which sends CORS headers, unlike the CTA API).
+# Note: the schedule only runs once this file is on the default branch.
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch arrivals from CTA Train Tracker
+        env:
+          # Set a CTA_KEY repo secret to override the inline key
+          CTA_KEY: ${{ secrets.CTA_KEY || '459a48123f7c40b5b22606d9a4a75e61' }}
+        run: |
+          curl -sf "https://lapi.transitchicago.com/api/1.0/ttarrivals.aspx?key=${CTA_KEY}&mapid=40380&max=10&outputType=JSON" -o arrivals.json
+          grep -q '"errCd":"0"' arrivals.json
+
+      - name: Force-push single commit to cta-data branch
+        run: |
+          mkdir data
+          cp arrivals.json data/
+          cd data
+          git init -b cta-data
+          git -c user.name="cta-bot" -c user.email="cta-bot@users.noreply.github.com" add -A
+          git -c user.name="cta-bot" -c user.email="cta-bot@users.noreply.github.com" commit -m "Update CTA arrivals"
+          git push --force "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" cta-data
