@@ -119,6 +119,51 @@
         flex: none;
     }
 
+    .board-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.66rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: #8fa0b5;
+        border-bottom: 1px solid #243049;
+        padding-bottom: 9px;
+        margin-bottom: 10px;
+    }
+
+    .board-head .updated { margin-left: auto; letter-spacing: 0.08em; }
+
+    .board .arrival {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        padding: 4px 0;
+        min-width: min(380px, 72vw);
+    }
+
+    .board .rt {
+        flex: none;
+        width: 44px;
+        text-align: center;
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        color: #fff;
+        border-radius: 4px;
+        padding: 3px 0;
+        text-shadow: none;
+        align-self: center;
+    }
+
+    .board .dest {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .board .eta { flex: none; min-width: 58px; text-align: right; }
+
     /* ============ SKYLINE ============ */
     .skyline {
         position: relative;
@@ -412,10 +457,16 @@
             <p class="role">Software engineer building <strong>agentic AI systems</strong> in commercial payments at JPMorgan Chase. Midwest roots, modern stack.</p>
 
             <div class="board mono">
-                <div class="row">
+                <div class="board-head">
                     <span class="dot"></span>
-                    <span>1&nbsp; ENGINEER toward THE LOOP</span>
-                    <span class="due">DUE</span>
+                    <span>Clark/Lake · Train Arrivals</span>
+                    <span class="updated" id="board-updated"></span>
+                </div>
+                <div id="board-rows">
+                    <div class="row">
+                        <span>1&nbsp; ENGINEER toward THE LOOP</span>
+                        <span class="due">DUE</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -601,6 +652,117 @@
         <span class="stars" style="color:var(--flag-red)">✶ ✶ ✶ ✶</span>
         Made in Chicago · City of Big Shoulders
     </footer>
+
+    <script>
+    (function () {
+        var KEY = "459a48123f7c40b5b22606d9a4a75e61";
+        var MAPID = "40380"; /* Clark/Lake */
+        var API = "https://lapi.transitchicago.com/api/1.0/ttarrivals.aspx?key=" + KEY +
+                  "&mapid=" + MAPID + "&max=10&outputType=JSON";
+
+        /* Primary source: arrivals.json refreshed every ~5 min by a GitHub
+           Actions cron (see .github/workflows/cta-arrivals.yml) — served with
+           CORS headers from raw.githubusercontent.com. The CTA API itself has
+           no CORS headers, so direct browser calls need a public proxy; we
+           try those as a freshness backup. */
+        var SOURCES = [
+            { url: "https://raw.githubusercontent.com/colesnic/colesnic.github.io/cta-data/arrivals.json",
+              headers: {} },
+            { url: "https://api.allorigins.win/raw?url=" + encodeURIComponent(API),
+              headers: {} },
+            { url: "https://api.cors.lol/?url=" + encodeURIComponent(API),
+              headers: {} }
+        ];
+
+        var LINE_COLORS = {
+            "Red": "#c60c30", "Blue": "#00a1de", "Brn": "#62361b", "G": "#009b3a",
+            "Org": "#f9461c", "P": "#522398", "Pink": "#e27ea6", "Y": "#f9e300"
+        };
+        var LINE_NAMES = {
+            "Red": "RED", "Blue": "BLUE", "Brn": "BRN", "G": "GRN",
+            "Org": "ORG", "P": "PUR", "Pink": "PNK", "Y": "YEL"
+        };
+
+        /* CTA timestamps are Chicago wall-clock with no timezone marker, so
+           compare them against "now" expressed the same way. */
+        function nowChicago() {
+            return new Date(new Date().toLocaleString("en-US", { timeZone: "America/Chicago" }));
+        }
+
+        function fetchWithTimeout(src, ms) {
+            var ctrl = new AbortController();
+            var t = setTimeout(function () { ctrl.abort(); }, ms);
+            return fetch(src.url, { headers: src.headers, signal: ctrl.signal, cache: "no-store" })
+                .finally(function () { clearTimeout(t); });
+        }
+
+        function getArrivals(i) {
+            i = i || 0;
+            if (i >= SOURCES.length) return Promise.resolve(null);
+            return fetchWithTimeout(SOURCES[i], 8000)
+                .then(function (r) {
+                    if (!r.ok) throw new Error(r.status);
+                    return r.json();
+                })
+                .then(function (j) {
+                    if (j && j.ctatt && j.ctatt.errCd === "0" && j.ctatt.eta) return j.ctatt;
+                    throw new Error("bad payload");
+                })
+                .catch(function () { return getArrivals(i + 1); });
+        }
+
+        function render(ctatt) {
+            var rows = document.getElementById("board-rows");
+            var updated = document.getElementById("board-updated");
+            if (!ctatt) return;
+
+            var now = nowChicago();
+
+            /* drop trains that already arrived (data may be a few min old) */
+            var upcoming = ctatt.eta.filter(function (eta) {
+                return (new Date(eta.arrT) - now) / 60000 > -0.5;
+            }).slice(0, 4);
+            if (!upcoming.length) return;
+
+            rows.innerHTML = "";
+            upcoming.forEach(function (eta) {
+                var mins = (new Date(eta.arrT) - now) / 60000;
+                var label = (eta.isApp === "1" || mins < 1.5) ? "DUE" : Math.round(mins) + " min";
+
+                var row = document.createElement("div");
+                row.className = "row arrival";
+
+                var rt = document.createElement("span");
+                rt.className = "rt";
+                rt.textContent = LINE_NAMES[eta.rt] || eta.rt.toUpperCase();
+                rt.style.background = LINE_COLORS[eta.rt] || "#555";
+                if (eta.rt === "Y") rt.style.color = "#111";
+
+                var dest = document.createElement("span");
+                dest.className = "dest";
+                dest.textContent = "to " + eta.destNm + (eta.isDly === "1" ? " · DELAYED" : "");
+
+                var time = document.createElement("span");
+                time.className = "eta";
+                time.textContent = label;
+                if (label === "DUE") time.className += " due";
+
+                row.appendChild(rt);
+                row.appendChild(dest);
+                row.appendChild(time);
+                rows.appendChild(row);
+            });
+
+            var t = new Date(ctatt.tmst).toLocaleTimeString("en-US",
+                { hour: "numeric", minute: "2-digit" });
+            updated.textContent = "CTA · AS OF " + t;
+        }
+
+        function refresh() { getArrivals().then(render); }
+        refresh();
+        setInterval(refresh, 60000);
+    })();
+    </script>
 
 </body>
 </html>
