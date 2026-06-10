@@ -1,198 +1,523 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NICK COLES | ENGINEER</title>
-    <style>
-        /* BRUTALIST RESET */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            cursor: crosshair;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NICK COLES // INDUSTRIAL UNIT 07</title>
+<style>
+    /* ============ RESET ============ */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        :root {
-            --black: #000000;
-            --white: #ffffff;
-            --neon: #00ff00; /* Matrix Green */
-            --border-thick: 4px solid #000;
-        }
+    :root {
+        --orange: #ff6a00;
+        --orange-hot: #ffa040;
+        --orange-deep: #c24400;
+        --steel-dark: #0c0e10;
+        --steel-mid: #1a1d21;
+        --steel-light: #2c3138;
+        --steel-edge: #3d434c;
+    }
 
-        body {
-            background-color: var(--white);
-            font-family: 'Courier New', Courier, monospace;
-            color: var(--black);
-            line-height: 1.2;
-            padding: 2vw;
-        }
+    html, body { height: 100%; }
 
-        /* HEADING SECTION */
-        header {
-            border: var(--border-thick);
-            padding: 20px;
-            background-color: var(--neon);
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    body {
+        background: var(--steel-dark);
+        color: #d8dadd;
+        font-family: 'Courier New', Courier, monospace;
+        overflow-x: hidden;
+        position: relative;
+    }
 
-        h1 {
-            font-size: clamp(2rem, 8vw, 5rem);
-            text-transform: uppercase;
-            font-weight: 900;
-        }
+    /* ============ GLOBAL GRAIN / TEXTURE ============ */
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 100;
+        opacity: 0.5;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.12'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
 
-        .status-pill {
-            background: var(--black);
-            color: var(--neon);
-            padding: 5px 15px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
+    /* faint scanlines for the reflective-screen feel */
+    body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 101;
+        background: repeating-linear-gradient(
+            0deg,
+            transparent 0px,
+            transparent 3px,
+            rgba(0,0,0,0.18) 4px
+        );
+        mix-blend-mode: multiply;
+    }
 
-        /* GRID LAYOUT */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
+    /* ============ VERTICAL PIPES (background layer) ============ */
+    .pipes {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 2vw;
+        pointer-events: none;
+    }
 
-        section {
-            border: var(--border-thick);
-            padding: 20px;
-            transition: transform 0.1s;
-        }
+    .pipe {
+        position: relative;
+        width: 58px;
+        height: 100%;
+        flex: none;
+        /* cylindrical metal shading */
+        background:
+            linear-gradient(90deg,
+                #08090b 0%,
+                #23272d 12%,
+                #565e69 30%,
+                #aeb6c0 46%,
+                #e8ecf0 50%,
+                #aeb6c0 54%,
+                #565e69 70%,
+                #23272d 88%,
+                #08090b 100%);
+        box-shadow:
+            inset 0 0 6px rgba(0,0,0,0.6),
+            8px 0 24px rgba(0,0,0,0.55);
+    }
 
-        section:hover {
-            transform: translate(-5px, -5px);
-            box-shadow: 10px 10px 0px var(--black);
-            background-color: #f0f0f0;
-        }
+    .pipe.orange {
+        background:
+            linear-gradient(90deg,
+                #2a0e00 0%,
+                #7a2f00 12%,
+                #cf5a00 30%,
+                #ff9b3d 46%,
+                #ffd9a8 50%,
+                #ff9b3d 54%,
+                #cf5a00 70%,
+                #7a2f00 88%,
+                #2a0e00 100%);
+        box-shadow:
+            inset 0 0 6px rgba(0,0,0,0.6),
+            0 0 35px rgba(255,106,0,0.28),
+            8px 0 24px rgba(0,0,0,0.55);
+    }
 
-        h2 {
-            background: var(--black);
-            color: var(--white);
-            display: inline-block;
-            padding: 5px 10px;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-        }
+    .pipe.thin { width: 26px; }
 
-        /* PROJECTS LIST */
-        .item {
-            border-bottom: 2px solid var(--black);
-            padding: 10px 0;
-        }
+    /* moving sheen sliding down each pipe */
+    .pipe::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg,
+            transparent 0%,
+            rgba(255,255,255,0.0) 35%,
+            rgba(255,255,255,0.35) 50%,
+            rgba(255,255,255,0.0) 65%,
+            transparent 100%);
+        background-size: 100% 300%;
+        animation: sheen 7s linear infinite;
+        mix-blend-mode: screen;
+    }
 
-        .item:last-child { border-bottom: none; }
+    .pipe:nth-child(2)::before { animation-delay: -2s; }
+    .pipe:nth-child(3)::before { animation-delay: -4s; }
+    .pipe:nth-child(4)::before { animation-delay: -1s; }
+    .pipe:nth-child(5)::before { animation-delay: -5s; }
+    .pipe:nth-child(6)::before { animation-delay: -3s; }
 
-        .tag {
-            font-size: 0.8rem;
-            border: 1px solid var(--black);
-            padding: 2px 5px;
-            margin-right: 5px;
-            background: #eee;
-        }
+    @keyframes sheen {
+        0%   { background-position: 0 -150%; }
+        100% { background-position: 0 150%; }
+    }
 
-        /* MARQUEE EFFECT */
-        .marquee {
-            border: var(--border-thick);
-            background: var(--black);
-            color: var(--white);
-            padding: 10px 0;
-            overflow: hidden;
-            white-space: nowrap;
-            margin-bottom: 20px;
-        }
+    /* pipe couplings / flange rings */
+    .pipe::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+            repeating-linear-gradient(180deg,
+                transparent 0px,
+                transparent 160px,
+                rgba(0,0,0,0.55) 160px,
+                rgba(0,0,0,0.55) 164px,
+                rgba(255,255,255,0.30) 164px,
+                rgba(255,255,255,0.30) 168px,
+                rgba(0,0,0,0.45) 168px,
+                rgba(0,0,0,0.45) 178px,
+                rgba(255,255,255,0.18) 178px,
+                rgba(255,255,255,0.18) 180px,
+                transparent 180px,
+                transparent 184px);
+    }
 
-        .marquee span {
-            display: inline-block;
-            padding-left: 100%;
-            animation: marquee 15s linear infinite;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
+    @media (max-width: 900px) {
+        .pipe:nth-child(n+5) { display: none; }
+    }
+    @media (max-width: 600px) {
+        .pipe:nth-child(n+3) { display: none; }
+    }
 
-        @keyframes marquee {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-100%, 0); }
-        }
+    /* ============ MAIN PLATE ============ */
+    main {
+        position: relative;
+        z-index: 10;
+        max-width: 980px;
+        margin: 6vh auto;
+        padding: 0 20px;
+    }
 
-        button {
-            background: var(--neon);
-            border: var(--border-thick);
-            padding: 15px 30px;
-            font-family: inherit;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-top: 20px;
-        }
+    .plate {
+        position: relative;
+        background:
+            linear-gradient(160deg, var(--steel-light) 0%, var(--steel-mid) 35%, #14171a 100%);
+        border: 1px solid var(--steel-edge);
+        border-top-color: #555c66;
+        box-shadow:
+            0 30px 80px rgba(0,0,0,0.8),
+            inset 0 1px 0 rgba(255,255,255,0.10),
+            inset 0 -2px 12px rgba(0,0,0,0.6);
+        padding: 48px 44px;
+        margin-bottom: 28px;
+        /* brushed metal texture */
+        background-blend-mode: overlay;
+    }
 
-        button:active {
-            transform: translate(2px, 2px);
-            box-shadow: none;
-        }
+    .plate::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+            90deg,
+            rgba(255,255,255,0.025) 0px,
+            rgba(255,255,255,0.025) 1px,
+            transparent 1px,
+            transparent 3px
+        );
+    }
 
-        @media (max-width: 600px) {
-            h1 { font-size: 3rem; }
-        }
-    </style>
+    /* rivets in plate corners */
+    .rivet {
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #cfd5dc 0%, #6b737e 45%, #20242a 100%);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.8), inset 0 -1px 2px rgba(0,0,0,0.6);
+    }
+    .rivet.tl { top: 12px; left: 12px; }
+    .rivet.tr { top: 12px; right: 12px; }
+    .rivet.bl { bottom: 12px; left: 12px; }
+    .rivet.br { bottom: 12px; right: 12px; }
+
+    /* ============ HAZARD STRIPE ============ */
+    .hazard {
+        height: 18px;
+        background: repeating-linear-gradient(
+            45deg,
+            var(--orange) 0px,
+            var(--orange) 20px,
+            #111 20px,
+            #111 40px
+        );
+        border-top: 1px solid rgba(255,255,255,0.15);
+        border-bottom: 1px solid rgba(0,0,0,0.8);
+        box-shadow: 0 0 24px rgba(255,106,0,0.25);
+        margin: -48px -44px 40px -44px;
+    }
+
+    /* ============ HEADER / TITLE ============ */
+    .unit-tag {
+        font-size: 0.75rem;
+        letter-spacing: 0.35em;
+        color: var(--orange-hot);
+        text-transform: uppercase;
+        margin-bottom: 14px;
+    }
+
+    .unit-tag .blink {
+        animation: blink 1.2s steps(2) infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    h1 {
+        font-size: clamp(2.4rem, 8vw, 5.2rem);
+        line-height: 0.95;
+        text-transform: uppercase;
+        font-weight: 900;
+        letter-spacing: 0.02em;
+        /* reflective molten-orange metal text */
+        background: linear-gradient(180deg,
+            #fff3e0 0%,
+            #ffc176 22%,
+            var(--orange) 45%,
+            #952f00 55%,
+            var(--orange-deep) 62%,
+            #ffae5c 78%,
+            #fff3e0 100%);
+        background-size: 100% 220%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: molten 6s ease-in-out infinite alternate;
+        filter: drop-shadow(0 0 18px rgba(255,106,0,0.45))
+                drop-shadow(0 4px 2px rgba(0,0,0,0.9));
+    }
+
+    @keyframes molten {
+        0%   { background-position: 0 0%; }
+        100% { background-position: 0 100%; }
+    }
+
+    .subtitle {
+        margin-top: 18px;
+        font-size: clamp(0.8rem, 2vw, 1rem);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #9aa1aa;
+    }
+    .subtitle b { color: var(--orange-hot); }
+
+    /* ============ DATA PANELS ============ */
+    .panel-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+        gap: 22px;
+        position: relative;
+        z-index: 10;
+    }
+
+    .panel {
+        position: relative;
+        background: linear-gradient(170deg, #22262b 0%, #15181c 60%, #0e1013 100%);
+        border: 1px solid var(--steel-edge);
+        border-left: 4px solid var(--orange);
+        padding: 26px 24px 30px;
+        box-shadow:
+            0 18px 40px rgba(0,0,0,0.7),
+            inset 0 1px 0 rgba(255,255,255,0.08);
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-left-color 0.15s ease;
+    }
+
+    .panel::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+            90deg,
+            rgba(255,255,255,0.02) 0px,
+            rgba(255,255,255,0.02) 1px,
+            transparent 1px,
+            transparent 3px
+        );
+    }
+
+    .panel:hover {
+        transform: translateY(-4px);
+        border-left-color: var(--orange-hot);
+        box-shadow:
+            0 26px 50px rgba(0,0,0,0.8),
+            0 0 30px rgba(255,106,0,0.18),
+            inset 0 1px 0 rgba(255,255,255,0.10);
+    }
+
+    .panel h2 {
+        font-size: 0.8rem;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--orange);
+        border-bottom: 1px solid #3a4047;
+        padding-bottom: 10px;
+        margin-bottom: 16px;
+    }
+
+    .panel p { font-size: 0.92rem; line-height: 1.55; color: #c3c8ce; }
+
+    .row {
+        border-bottom: 1px dashed #343a42;
+        padding: 12px 0;
+    }
+    .row:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .row strong {
+        color: #f0f2f4;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .tag {
+        display: inline-block;
+        font-size: 0.68rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--orange-hot);
+        border: 1px solid var(--orange-deep);
+        background: rgba(255,106,0,0.08);
+        padding: 3px 8px;
+        margin: 8px 6px 0 0;
+    }
+
+    .gauge-line {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 14px;
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        color: #7d848d;
+        text-transform: uppercase;
+    }
+
+    .gauge {
+        flex: 1;
+        height: 8px;
+        background: #0a0c0e;
+        border: 1px solid #3a4047;
+        overflow: hidden;
+    }
+
+    .gauge i {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, var(--orange-deep), var(--orange), var(--orange-hot));
+        box-shadow: 0 0 12px rgba(255,106,0,0.6);
+        animation: pressure 3.4s ease-in-out infinite alternate;
+    }
+
+    .g1 i { width: 86%; }
+    .g2 i { width: 72%; animation-delay: -1.2s; }
+    .g3 i { width: 94%; animation-delay: -2.1s; }
+
+    @keyframes pressure {
+        from { transform: scaleX(0.96); transform-origin: left; }
+        to   { transform: scaleX(1.0);  transform-origin: left; }
+    }
+
+    /* ============ CONNECT / FOOTER ============ */
+    .connect {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+    }
+
+    .connect a {
+        color: var(--orange-hot);
+        text-decoration: none;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-weight: bold;
+        border: 1px solid var(--orange-deep);
+        background: linear-gradient(180deg, rgba(255,106,0,0.16), rgba(255,106,0,0.04));
+        padding: 12px 22px;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+        transition: all 0.15s ease;
+    }
+
+    .connect a:hover {
+        background: linear-gradient(180deg, var(--orange-hot), var(--orange-deep));
+        color: #0c0e10;
+        box-shadow: 0 0 26px rgba(255,106,0,0.5);
+    }
+
+    footer {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        font-size: 0.65rem;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        color: #5c636c;
+        padding: 40px 0 60px;
+    }
+</style>
 </head>
 <body>
 
-    <header>
-        <h1>NICK COLES</h1>
-        <div class="status-pill">// CHICAGO //</div>
-    </header>
-
-    <div class="marquee">
-        <span>SOFTWARE ENGINEER @ JPMORGAN CHASE — WORKING ON AGENTIC AI SYSTEMS IN PAYMENTS — UNIVERSITY OF MICHIGAN COMPUTER SCIENCE ALUMNUS</span>
+    <!-- BACKGROUND PIPEWORK -->
+    <div class="pipes" aria-hidden="true">
+        <div class="pipe"></div>
+        <div class="pipe thin orange"></div>
+        <div class="pipe orange"></div>
+        <div class="pipe thin"></div>
+        <div class="pipe"></div>
+        <div class="pipe thin orange"></div>
     </div>
 
-    <div class="grid-container">
-        <section>
-            <h2>01_PROFILE</h2>
-            <p>Working on agentic AI systems at JPMorgan Chase.</p>
-            <br>
-            <p><strong>POSITION:</strong> SOFTWARE ENGINEER I<br><strong>TEAM:</strong> COMMERCIAL PAYMENTS</p>
-        </section>
+    <main>
+        <div class="plate">
+            <div class="hazard"></div>
+            <span class="rivet tl"></span><span class="rivet tr"></span>
+            <span class="rivet bl"></span><span class="rivet br"></span>
 
-        <section>
-            <h2>02_PROJECTS</h2>
-            <div class="item">
-                <p><strong>WIKI RA</strong>(I)<strong>CE</strong></p>
-                <p>COMPETE WITH AN AI AGENT IN A GAME OF WIKI RACE.</p>
-                <span class="tag">AI</span><span class="tag">PYTHON</span>
-            </div>
-            <div class="item">
-                <p><strong>SMALL BUSINESS CONSULTANT</strong></p>
-                <p>HELPING A LAW FIRM USE CHAT GPT TO AUTOMATE LEGAL PROCESSES.</p>
-                <span class="tag">PROMPT ENGINEERING</span><span class="tag">STRATEGY</span>
-            </div>
-        </section>
+            <p class="unit-tag">SYS.ONLINE <span class="blink">▮</span> // UNIT_07 // CHICAGO FACILITY</p>
+            <h1>Nick<br>Coles</h1>
+            <p class="subtitle">SOFTWARE ENGINEER — <b>AGENTIC AI SYSTEMS</b> @ JPMORGAN CHASE</p>
 
-        <section>
-            <h2>03_EXPERIENCE</h2>
-            <div class="item">
-                <p><strong>JPMORGAN CHASE</strong></p>
-                <p>Software Engineer I</p>
-                <p>2024 - PRESENT</p>
-            </div>
-            <div class="item">
-                <p><strong>UNIVERSITY OF MICHIGAN</strong></p>
-                <p>Studied CS</p>
-                <p>Zeta Pi Tech Fraternity</p>
-            </div>
-        </section>
+            <div class="gauge-line g1"><span>PWR</span><div class="gauge"><i></i></div></div>
+            <div class="gauge-line g2"><span>TMP</span><div class="gauge"><i></i></div></div>
+            <div class="gauge-line g3"><span>SYS</span><div class="gauge"><i></i></div></div>
+        </div>
 
-        <section style="background-color: var(--black); color: var(--white);">
-            <h2 style="background: var(--neon); color: var(--black);">04_CONNECT</h2>
-            <p>colesnic@umich.edu</p>
-        </section>
-    </div>
+        <div class="panel-grid">
+            <section class="panel">
+                <h2>01 / Profile</h2>
+                <p>Building agentic AI systems for commercial payments at JPMorgan Chase.</p>
+                <div class="row">
+                    <strong>Position</strong>
+                    <p>Software Engineer I</p>
+                </div>
+                <div class="row">
+                    <strong>Team</strong>
+                    <p>Commercial Payments</p>
+                </div>
+            </section>
+
+            <section class="panel">
+                <h2>02 / Projects</h2>
+                <div class="row">
+                    <strong>Wiki Ra(i)ce</strong>
+                    <p>Compete against an AI agent in a game of Wiki Race.</p>
+                    <span class="tag">AI</span><span class="tag">Python</span>
+                </div>
+                <div class="row">
+                    <strong>Small Business Consultant</strong>
+                    <p>Helping a law firm automate legal processes with LLMs.</p>
+                    <span class="tag">Prompt Engineering</span><span class="tag">Strategy</span>
+                </div>
+            </section>
+
+            <section class="panel">
+                <h2>03 / Experience</h2>
+                <div class="row">
+                    <strong>JPMorgan Chase</strong>
+                    <p>Software Engineer I — 2024 → Present</p>
+                </div>
+                <div class="row">
+                    <strong>University of Michigan</strong>
+                    <p>Computer Science — Zeta Pi Tech Fraternity</p>
+                </div>
+            </section>
+
+            <section class="panel connect">
+                <h2 style="border: none; margin: 0; padding: 0;">04 / Connect</h2>
+                <a href="mailto:colesnic@umich.edu">colesnic@umich.edu</a>
+            </section>
+        </div>
+
+        <footer>— PRESSURE NOMINAL // ALL SYSTEMS OPERATIONAL —</footer>
+    </main>
 
 </body>
 </html>
