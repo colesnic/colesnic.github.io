@@ -1,0 +1,26 @@
+{
+  "name": "chicago-happy-hour",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI-native Chicago happy hour finder — a minimalist chat interface for finding happy hours near you with natural-language preferences.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "seed": "node scripts/seed.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.65.0",
+    "@vercel/postgres": "^0.10.0",
+    "next": "^15.5.22",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^5.5.3"
+  }
+}
