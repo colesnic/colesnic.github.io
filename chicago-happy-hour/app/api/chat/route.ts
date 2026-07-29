@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenAI, Type, type Content, type Part } from "@google/genai";
 import { loadAllHappyHours } from "@/lib/db";
 import {
   searchHappyHours,
@@ -11,7 +11,7 @@ import {
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
-const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
+const MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -23,51 +23,51 @@ interface ChatRequestBody {
   location?: UserLocation | null;
 }
 
-const SEARCH_TOOL: Anthropic.Tool = {
+const SEARCH_DECLARATION = {
   name: "search_happy_hours",
   description:
     "Search Chicago happy hours by neighborhood, day, time, drink/food type, atmosphere, and price. " +
     "Call this whenever the user is looking for a happy hour, even if they only give vague preferences. " +
     "Leave parameters out when the user did not specify them.",
-  input_schema: {
-    type: "object",
+  parameters: {
+    type: Type.OBJECT,
     properties: {
       neighborhoods: {
-        type: "array",
-        items: { type: "string" },
+        type: Type.ARRAY,
+        items: { type: Type.STRING },
         description:
           "Chicago neighborhoods to search, e.g. ['West Loop', 'Wicker Park', 'Logan Square'].",
       },
       day: {
-        type: "string",
+        type: Type.STRING,
         description:
           "Day of week as Mon/Tue/Wed/Thu/Fri/Sat/Sun, or 'today'. Use 'today' for 'right now' or 'tonight'.",
       },
       time: {
-        type: "string",
+        type: Type.STRING,
         description: "Target time in 24h HH:MM, or 'now'.",
       },
       open_now: {
-        type: "boolean",
+        type: Type.BOOLEAN,
         description:
           "True to only return venues whose happy hour is currently running (use for 'right now'/'open now').",
       },
       categories: {
-        type: "array",
-        items: { type: "string" },
+        type: Type.ARRAY,
+        items: { type: Type.STRING },
         description:
           "Preference tags: e.g. cocktails, beer, wine, oysters, tacos, margaritas, rooftop, patio, sports, dive, date night, cheap.",
       },
       max_price_level: {
-        type: "integer",
-        description: "1 (cheap $), 2 ($$), or 3 ($$$). Return venues at or below this level.",
+        type: Type.INTEGER,
+        description:
+          "1 (cheap $), 2 ($$), or 3 ($$$). Return venues at or below this level.",
       },
       query: {
-        type: "string",
+        type: Type.STRING,
         description: "Any freeform keywords not captured by the other fields.",
       },
     },
-    required: [],
   },
 };
 
@@ -91,7 +91,24 @@ function systemPrompt(): string {
   ].join("\n");
 }
 
-/** Heuristic fallback used when no ANTHROPIC_API_KEY is configured. */
+/** Compact venue shape returned to the model as tool output. */
+function compact(r: SearchResult) {
+  return {
+    name: r.name,
+    neighborhood: r.neighborhood,
+    days: r.days,
+    start: r.start,
+    end: r.end,
+    deals: r.deals,
+    vibe: r.vibe,
+    price: "$".repeat(r.priceLevel),
+    open_now: r.openAtQueryTime ?? null,
+    distance_miles:
+      r.distanceMiles != null ? Math.round(r.distanceMiles * 10) / 10 : null,
+  };
+}
+
+/** Heuristic fallback used when no GEMINI_API_KEY is configured. */
 function heuristicSearch(text: string): SearchParams {
   const t = text.toLowerCase();
   const params: SearchParams = {};
@@ -112,8 +129,10 @@ function heuristicSearch(text: string): SearchParams {
     "Bucktown",
     "Hyde Park",
   ];
-  const matchedHoods = hoods.filter((h) =>
-    t.includes(h.toLowerCase()) || (h === "The Loop" && /\bthe loop\b|\bloop\b/.test(t)),
+  const matchedHoods = hoods.filter(
+    (h) =>
+      t.includes(h.toLowerCase()) ||
+      (h === "The Loop" && /\bthe loop\b|\bloop\b/.test(t)),
   );
   if (matchedHoods.length) params.neighborhoods = matchedHoods;
 
@@ -169,7 +188,7 @@ export async function POST(req: Request) {
   const lastUser = [...messages].reverse().find((m) => m.role === "user");
 
   // ---- Fallback: no API key configured -----------------------------------
-  if (!process.env.ANTHROPIC_API_KEY) {
+  if (!process.env.GEMINI_API_KEY) {
     const params = heuristicSearch(lastUser?.content ?? "");
     const results = searchHappyHours(all, params, location);
     return Response.json({
@@ -179,76 +198,57 @@ export async function POST(req: Request) {
     });
   }
 
-  // ---- AI path: Claude with a tool-use loop -------------------------------
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  // ---- AI path: Gemini with function calling -----------------------------
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-  const convo: Anthropic.MessageParam[] = messages.map((m) => ({
-    role: m.role,
-    content: m.content,
+  const contents: Content[] = messages.map((m) => ({
+    role: m.role === "assistant" ? "model" : "user",
+    parts: [{ text: m.content }],
   }));
 
   let lastResults: SearchResult[] = [];
 
   try {
     let finalText = "";
-    // Bounded loop: the model may search, then respond.
+    // Bounded loop: the model may call the search tool, then respond.
     for (let i = 0; i < 4; i++) {
-      const response = await client.messages.create({
+      const resp = await ai.models.generateContent({
         model: MODEL,
-        max_tokens: 1024,
-        system: systemPrompt(),
-        tools: [SEARCH_TOOL],
-        messages: convo,
+        contents,
+        config: {
+          systemInstruction: systemPrompt(),
+          tools: [{ functionDeclarations: [SEARCH_DECLARATION] }],
+        },
       });
 
-      const toolUses = response.content.filter(
-        (b): b is Anthropic.ToolUseBlock => b.type === "tool_use",
-      );
+      if (resp.text) finalText = resp.text;
 
-      // Collect any text the model produced this turn.
-      const text = response.content
-        .filter((b): b is Anthropic.TextBlock => b.type === "text")
-        .map((b) => b.text)
-        .join("\n")
-        .trim();
-      if (text) finalText = text;
+      const calls = resp.functionCalls ?? [];
+      if (calls.length === 0) break;
 
-      if (response.stop_reason !== "tool_use" || toolUses.length === 0) {
-        break;
-      }
+      // Echo the model's function-call turn back into the conversation.
+      const modelContent = resp.candidates?.[0]?.content;
+      if (modelContent) contents.push(modelContent);
 
-      convo.push({ role: "assistant", content: response.content });
-
-      const toolResults: Anthropic.ToolResultBlockParam[] = [];
-      for (const tu of toolUses) {
+      const responseParts: Part[] = [];
+      for (const call of calls) {
         let results: SearchResult[] = [];
-        if (tu.name === "search_happy_hours") {
-          results = searchHappyHours(all, tu.input as SearchParams, location);
+        if (call.name === "search_happy_hours") {
+          results = searchHappyHours(
+            all,
+            (call.args ?? {}) as unknown as SearchParams,
+            location,
+          );
           lastResults = results;
         }
-        toolResults.push({
-          type: "tool_result",
-          tool_use_id: tu.id,
-          content: JSON.stringify(
-            results.map((r) => ({
-              name: r.name,
-              neighborhood: r.neighborhood,
-              days: r.days,
-              start: r.start,
-              end: r.end,
-              deals: r.deals,
-              vibe: r.vibe,
-              price: "$".repeat(r.priceLevel),
-              open_now: r.openAtQueryTime ?? null,
-              distance_miles:
-                r.distanceMiles != null
-                  ? Math.round(r.distanceMiles * 10) / 10
-                  : null,
-            })),
-          ),
+        responseParts.push({
+          functionResponse: {
+            name: call.name ?? "search_happy_hours",
+            response: { results: results.map(compact) },
+          },
         });
       }
-      convo.push({ role: "user", content: toolResults });
+      contents.push({ role: "user", parts: responseParts });
     }
 
     return Response.json({
@@ -256,7 +256,7 @@ export async function POST(req: Request) {
       results: lastResults,
     });
   } catch (err) {
-    console.error("Anthropic request failed:", err);
+    console.error("Gemini request failed:", err);
     // Fall back to heuristic search so the user still gets results.
     const params = heuristicSearch(lastUser?.content ?? "");
     const results = searchHappyHours(all, params, location);

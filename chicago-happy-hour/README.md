@@ -5,17 +5,18 @@ natural-language preferences. Tell it what you're in the mood for — _"cheap
 drafts open right now near me"_, _"rooftop cocktails in River North"_, _"$1
 oysters in the West Loop"_ — and it finds the spot.
 
-Built with **Next.js + React**, an **Anthropic Claude** tool-use backend, and an
-optional **free Postgres** database. Deploys to **Vercel** in one click.
+Built with **Next.js + React**, a **Google Gemini** function-calling backend (free
+tier), and an optional **free Postgres** database. Deploys to **Vercel** in one
+click.
 
 ## How it works
 
 - The chat UI (`app/page.tsx`) sends the conversation — plus your location if you
   opt in — to `/api/chat`.
-- The API route (`app/api/chat/route.ts`) calls Claude with a `search_happy_hours`
-  tool. Claude interprets the natural-language request (neighborhood, drink type,
-  vibe, price, "open now"), calls the tool, and writes a short reply. The matched
-  venues are rendered as cards below the message.
+- The API route (`app/api/chat/route.ts`) calls Gemini with a `search_happy_hours`
+  function. Gemini interprets the natural-language request (neighborhood, drink
+  type, vibe, price, "open now"), calls the function, and writes a short reply.
+  The matched venues are rendered as cards below the message.
 - Search + distance ranking (`lib/search.ts`) runs against the venue data
   (`lib/db.ts`), which reads from Postgres if attached, otherwise the bundled
   sample dataset (`data/happy-hours.json`).
@@ -28,7 +29,7 @@ configuration for local development.
 
 ```bash
 npm install
-cp .env.example .env.local   # add your ANTHROPIC_API_KEY (optional)
+cp .env.example .env.local   # add your GEMINI_API_KEY (optional)
 npm run dev                  # http://localhost:3000
 ```
 
@@ -37,7 +38,8 @@ npm run dev                  # http://localhost:3000
 1. Push this folder to a Git repo.
 2. In Vercel, **New Project** → import the repo → set **Root Directory** to
    `chicago-happy-hour`. The framework preset is Next.js.
-3. Add the `ANTHROPIC_API_KEY` environment variable.
+3. Add the `GEMINI_API_KEY` environment variable (free key from
+   [aistudio.google.com/apikey](https://aistudio.google.com/apikey)).
 4. Deploy.
 
 ### Add the free database (optional)
@@ -54,11 +56,11 @@ npm run dev                  # http://localhost:3000
 
 ## Configuration
 
-| Variable            | Required | Default            | Purpose                                   |
-| ------------------- | -------- | ------------------ | ----------------------------------------- |
-| `ANTHROPIC_API_KEY` | No\*     | —                  | Enables the natural-language AI chat path |
-| `ANTHROPIC_MODEL`   | No       | `claude-sonnet-5`  | Which Claude model to use                 |
-| `POSTGRES_URL`      | No       | —                  | Use Postgres instead of the bundled data  |
+| Variable         | Required | Default            | Purpose                                   |
+| ---------------- | -------- | ------------------ | ----------------------------------------- |
+| `GEMINI_API_KEY` | No\*     | —                  | Enables the natural-language AI chat path |
+| `GEMINI_MODEL`   | No       | `gemini-2.5-flash` | Which Gemini model to use                 |
+| `POSTGRES_URL`   | No       | —                  | Use Postgres instead of the bundled data  |
 
 \*Without a key the app still works, using a keyword-based fallback search.
 
