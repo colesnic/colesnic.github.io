@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nick Coles — Software Engineer, Chicago</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a1322'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='18' text-anchor='middle' fill='%2341b6e6'%3E%CE%BB%3C/text%3E%3C/svg%3E">
 <style>
     /* ============ RESET / BASE ============ */
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -23,9 +24,7 @@
         /* CTA lines */
         --cta-red: #c60c30;
         --cta-blue: #00a1de;
-        --cta-brown: #62361b;
         --cta-green: #009b3a;
-        --cta-orange: #f9461c;
         --cta-purple: #522398;
     }
 
@@ -39,20 +38,22 @@
         font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
         line-height: 1.6;
         overflow-x: hidden;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
     }
 
     .mono { font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace; }
 
-    .wrap { max-width: 1060px; margin: 0 auto; padding: 0 24px; }
+    .wrap { max-width: 1060px; margin: 0 auto; padding: 0 24px; width: 100%; }
 
     /* ============ HERO ============ */
     .hero {
         position: relative;
-        padding: 9vh 0 0;
-        min-height: 92vh;
         display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+        align-items: center;
+        min-height: 86vh;
+        padding: 12vh 0 6vh;
     }
 
     .locator {
@@ -164,281 +165,68 @@
 
     .board .eta { flex: none; min-width: 58px; text-align: right; }
 
-    /* ============ SKYLINE ============ */
-    .skyline {
-        position: relative;
-        margin-top: 60px;
-        line-height: 0;
-    }
-
-    .skyline svg { width: 100%; height: auto; display: block; }
-
-    .skyline .win {
-        fill: #ffd98a;
-        opacity: 0.85;
-        animation: twinkle 4s ease-in-out infinite;
-    }
-    .skyline .win:nth-of-type(3n)  { animation-delay: -1.3s; }
-    .skyline .win:nth-of-type(4n)  { animation-delay: -2.6s; }
-    .skyline .win:nth-of-type(5n)  { animation-delay: -0.7s; animation-duration: 5.5s; }
-    .skyline .win:nth-of-type(7n)  { animation-delay: -3.4s; }
-
-    @keyframes twinkle {
-        0%, 100% { opacity: 0.85; }
-        50% { opacity: 0.15; }
-    }
-
-    .beacon {
-        fill: var(--flag-red);
-        animation: beacon 2.4s ease-in-out infinite;
-    }
-    @keyframes beacon {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.1; }
-    }
-
-    /* lake shimmer under skyline */
-    .lake {
-        height: 64px;
-        background:
-            linear-gradient(180deg, #14263e 0%, #0a141f 100%);
-        position: relative;
-        overflow: hidden;
-    }
-    .lake::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: repeating-linear-gradient(
-            180deg,
-            rgba(65,182,230,0.10) 0 2px,
-            transparent 2px 7px
-        );
-        animation: shimmer 6s linear infinite;
-    }
-    @keyframes shimmer {
-        from { transform: translateY(0); }
-        to   { transform: translateY(7px); }
-    }
-
-    /* ============ FLAG DIVIDER ============ */
-    .flag-divider {
-        display: grid;
-        grid-template-rows: 1fr 1fr;
-        gap: 10px;
-        padding: 26px 0;
-        background: #f4f1ea;
-    }
-    .flag-divider .stripe { height: 16px; background: var(--flag-blue); }
-    .flag-divider .star-row {
-        grid-row: 1 / 3;
-        display: none;
-    }
-
-    /* simpler: true flag proportions */
-    .flag {
-        background: #f4f1ea;
-        padding: 18px 0;
-    }
-    .flag .inner {
+    /* ============ CARDS ============ */
+    .cards {
         display: flex;
-        flex-direction: column;
-        gap: 0;
-    }
-    .flag .stripe { height: 14px; background: var(--flag-blue); }
-    .flag .field {
-        height: 34px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 26px;
-        color: var(--flag-red);
-        font-size: 1.5rem;
-        line-height: 1;
+        gap: 16px;
+        flex-wrap: wrap;
+        padding-bottom: 10vh;
     }
 
-    /* ============ TRANSIT SECTIONS ============ */
-    .route { position: relative; padding: 80px 0 40px; }
-
-    .route-line {
-        position: absolute;
-        left: 50%;
-        top: 0;
-        bottom: 0;
-        width: 6px;
-        transform: translateX(-50%);
-        background: linear-gradient(180deg,
-            var(--cta-red) 0 25%,
-            var(--cta-blue) 25% 50%,
-            var(--cta-green) 50% 75%,
-            var(--cta-purple) 75% 100%);
-        border-radius: 3px;
-        opacity: 0.9;
-    }
-
-    /* little train running down the line */
-    .train {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 14px;
-        height: 26px;
-        background: #e8ecf2;
-        border-radius: 4px;
-        box-shadow: 0 0 14px rgba(232,236,242,0.8);
-        animation: ride 14s linear infinite;
-    }
-    @keyframes ride {
-        0%   { top: 0%;  opacity: 0; }
-        4%   { opacity: 1; }
-        22%  { top: 24%; }
-        26%  { top: 24%; } /* dwell at station */
-        47%  { top: 49%; }
-        51%  { top: 49%; }
-        72%  { top: 74%; }
-        76%  { top: 74%; }
-        96%  { top: 99%; opacity: 1; }
-        100% { top: 100%; opacity: 0; }
-    }
-
-    .station {
-        position: relative;
-        width: min(460px, 86vw);
-        margin: 0 0 110px;
+    .card {
+        flex: 1 1 240px;
         background: linear-gradient(180deg, #142440 0%, var(--panel) 100%);
         border: 1px solid #22344f;
         border-radius: 14px;
-        padding: 26px 26px 28px;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+        padding: 24px;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
     }
-
-    .station:nth-of-type(odd)  { margin-right: auto; margin-left: calc(50% - min(460px,86vw) - 48px); }
-    .station:nth-of-type(even) { margin-left: calc(50% + 48px); }
-
-    /* stop marker on the line */
-    .station::before {
+    .card::before {
         content: "";
         position: absolute;
-        top: 32px;
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        background: #fff;
-        border: 5px solid var(--stop, var(--cta-red));
-        box-shadow: 0 0 0 4px rgba(255,255,255,0.08);
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: var(--card-color, var(--flag-blue));
     }
-    .station:nth-of-type(odd)::before  { right: -67px; }
-    .station:nth-of-type(even)::before { left: -67px; }
-
-    /* connector from card to line */
-    .station::after {
-        content: "";
-        position: absolute;
-        top: 39px;
-        width: 48px;
-        height: 2px;
-        background: #2a3d5c;
-    }
-    .station:nth-of-type(odd)::after  { right: -48px; }
-    .station:nth-of-type(even)::after { left: -48px; }
-
-    .station h2 {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 0.78rem;
-        font-weight: 700;
-        letter-spacing: 0.26em;
-        text-transform: uppercase;
-        color: var(--muted);
-        margin-bottom: 16px;
+    .card:hover {
+        transform: translateY(-3px);
+        border-color: var(--flag-blue);
+        box-shadow: 0 16px 36px rgba(0,0,0,0.45);
     }
 
-    .line-chip {
+    .card .icon { font-size: 1.5rem; display: block; margin-bottom: 12px; }
+    .card h3 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; }
+    .card p { color: var(--muted); font-size: 0.9rem; margin-top: 6px; }
+    .card .go {
         display: inline-block;
-        padding: 3px 10px;
-        border-radius: 999px;
-        font-size: 0.68rem;
+        margin-top: 14px;
+        font-family: var(--mono, ui-monospace, monospace);
+        font-size: 0.72rem;
         letter-spacing: 0.14em;
-        color: #fff;
-        background: var(--stop, var(--cta-red));
-    }
-
-    .station h3 {
-        font-size: 1.25rem;
-        font-weight: 700;
-        letter-spacing: -0.01em;
-        margin-bottom: 6px;
-    }
-
-    .station p { color: var(--muted); font-size: 0.95rem; }
-    .station p strong { color: var(--text); }
-
-    .entry { padding: 14px 0; border-bottom: 1px solid #1e3050; }
-    .entry:last-child { border-bottom: none; padding-bottom: 0; }
-    .entry:first-of-type { padding-top: 0; }
-
-    .tags { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
-    .tag {
-        font-size: 0.68rem;
-        letter-spacing: 0.1em;
         text-transform: uppercase;
         color: var(--flag-blue-soft);
-        border: 1px solid #2a4a66;
-        background: rgba(65,182,230,0.08);
-        padding: 4px 10px;
-        border-radius: 999px;
     }
-
-    .btn {
-        display: inline-block;
-        margin-top: 16px;
-        padding: 12px 26px;
-        border-radius: 10px;
-        background: var(--flag-blue);
-        color: #06121f;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-decoration: none;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 28px rgba(65,182,230,0.35);
-    }
-
-    /* station accent colors */
-    .s-profile  { --stop: var(--cta-red); }
-    .s-projects { --stop: var(--cta-blue); }
-    .s-exp      { --stop: var(--cta-green); }
-    .s-connect  { --stop: var(--cta-purple); }
 
     /* ============ FOOTER ============ */
     footer {
+        margin-top: auto;
         text-align: center;
-        padding: 30px 20px 60px;
+        padding: 20px 20px 48px;
         color: var(--muted);
-        font-size: 0.8rem;
+        font-size: 0.72rem;
         letter-spacing: 0.18em;
         text-transform: uppercase;
     }
-    footer .stars { display: block; margin-bottom: 10px; }
 
     /* ============ MOBILE ============ */
     @media (max-width: 760px) {
-        .route-line, .train { left: 18px; transform: none; }
-        .station,
-        .station:nth-of-type(odd),
-        .station:nth-of-type(even) {
-            margin-left: 52px;
-            margin-right: 0;
-            width: auto;
-        }
-        .station:nth-of-type(odd)::before,
-        .station:nth-of-type(even)::before { left: -43px; right: auto; }
-        .station:nth-of-type(odd)::after,
-        .station:nth-of-type(even)::after { left: -34px; right: auto; width: 34px; }
         .board .row { white-space: normal; }
+        .hero { min-height: 0; padding-top: 10vh; }
     }
 </style>
 </head>
@@ -470,187 +258,28 @@
                 </div>
             </div>
         </div>
-
-        <!-- skyline -->
-        <div class="skyline" aria-hidden="true">
-            <svg viewBox="0 0 1440 300" preserveAspectRatio="xMidYMax slice">
-                <!-- sky glow -->
-                <defs>
-                    <linearGradient id="bldg" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0" stop-color="#16243a"/>
-                        <stop offset="1" stop-color="#0a1322"/>
-                    </linearGradient>
-                </defs>
-
-                <!-- back row -->
-                <g fill="#101d31">
-                    <rect x="40"  y="150" width="60" height="150"/>
-                    <rect x="150" y="120" width="48" height="180"/>
-                    <rect x="350" y="135" width="70" height="165"/>
-                    <rect x="560" y="110" width="46" height="190"/>
-                    <rect x="760" y="140" width="64" height="160"/>
-                    <rect x="980" y="125" width="52" height="175"/>
-                    <rect x="1180" y="145" width="66" height="155"/>
-                    <rect x="1340" y="120" width="50" height="180"/>
-                </g>
-
-                <!-- WILLIS TOWER (stepped, two antennas) -->
-                <g fill="url(#bldg)">
-                    <rect x="620" y="40"  width="56" height="260"/>
-                    <rect x="604" y="90"  width="16" height="210"/>
-                    <rect x="676" y="90"  width="16" height="210"/>
-                    <rect x="590" y="150" width="14" height="150"/>
-                    <rect x="692" y="150" width="14" height="150"/>
-                    <rect x="632" y="6"   width="3"  height="34"/>
-                    <rect x="660" y="6"   width="3"  height="34"/>
-                </g>
-                <circle class="beacon" cx="633.5" cy="6" r="3"/>
-                <circle class="beacon" cx="661.5" cy="6" r="3" style="animation-delay:-1.2s"/>
-
-                <!-- HANCOCK (tapered + antennas) -->
-                <g fill="url(#bldg)">
-                    <polygon points="220,300 248,70 296,70 324,300"/>
-                    <rect x="258" y="34" width="3" height="36"/>
-                    <rect x="283" y="34" width="3" height="36"/>
-                </g>
-                <circle class="beacon" cx="259.5" cy="34" r="3" style="animation-delay:-0.6s"/>
-                <circle class="beacon" cx="284.5" cy="34" r="3" style="animation-delay:-1.8s"/>
-                <!-- X bracing hint -->
-                <g stroke="#22344f" stroke-width="2" opacity="0.8">
-                    <line x1="252" y1="110" x2="312" y2="180"/>
-                    <line x1="292" y1="110" x2="232" y2="180"/>
-                    <line x1="240" y1="190" x2="308" y2="262"/>
-                    <line x1="304" y1="190" x2="236" y2="262"/>
-                </g>
-
-                <!-- MARINA CITY (corncobs) -->
-                <g fill="url(#bldg)">
-                    <rect x="850" y="120" width="44" height="180" rx="20"/>
-                    <rect x="906" y="120" width="44" height="180" rx="20"/>
-                </g>
-
-                <!-- AON CENTER -->
-                <rect fill="url(#bldg)" x="1050" y="70" width="50" height="230"/>
-                <g stroke="#22344f" stroke-width="2">
-                    <line x1="1060" y1="70" x2="1060" y2="300"/>
-                    <line x1="1075" y1="70" x2="1075" y2="300"/>
-                    <line x1="1090" y1="70" x2="1090" y2="300"/>
-                </g>
-
-                <!-- TRUMP-ish spire tower -->
-                <g fill="url(#bldg)">
-                    <rect x="450" y="95" width="58" height="205"/>
-                    <rect x="470" y="55" width="18" height="40"/>
-                    <rect x="478" y="20" width="3"  height="35"/>
-                </g>
-                <circle class="beacon" cx="479.5" cy="20" r="3" style="animation-delay:-2.1s"/>
-
-                <!-- mid towers -->
-                <g fill="url(#bldg)">
-                    <rect x="100" y="180" width="44" height="120"/>
-                    <rect x="380" y="170" width="40" height="130"/>
-                    <rect x="730" y="170" width="36" height="130"/>
-                    <rect x="1130" y="160" width="40" height="140"/>
-                    <rect x="1250" y="100" width="56" height="200"/>
-                    <rect x="1390" y="160" width="44" height="140"/>
-                    <rect x="0" y="190" width="50" height="110"/>
-                </g>
-
-                <!-- windows -->
-                <g>
-                    <rect class="win" x="632" y="70"  width="5" height="7"/>
-                    <rect class="win" x="650" y="100" width="5" height="7"/>
-                    <rect class="win" x="640" y="150" width="5" height="7"/>
-                    <rect class="win" x="660" y="190" width="5" height="7"/>
-                    <rect class="win" x="630" y="230" width="5" height="7"/>
-                    <rect class="win" x="262" y="100" width="5" height="7"/>
-                    <rect class="win" x="282" y="140" width="5" height="7"/>
-                    <rect class="win" x="270" y="200" width="5" height="7"/>
-                    <rect class="win" x="295" y="240" width="5" height="7"/>
-                    <rect class="win" x="465" y="120" width="5" height="7"/>
-                    <rect class="win" x="488" y="160" width="5" height="7"/>
-                    <rect class="win" x="470" y="220" width="5" height="7"/>
-                    <rect class="win" x="862" y="150" width="5" height="6"/>
-                    <rect class="win" x="880" y="190" width="5" height="6"/>
-                    <rect class="win" x="918" y="170" width="5" height="6"/>
-                    <rect class="win" x="934" y="230" width="5" height="6"/>
-                    <rect class="win" x="1062" y="100" width="5" height="7"/>
-                    <rect class="win" x="1080" y="150" width="5" height="7"/>
-                    <rect class="win" x="1066" y="210" width="5" height="7"/>
-                    <rect class="win" x="1262" y="130" width="5" height="7"/>
-                    <rect class="win" x="1284" y="180" width="5" height="7"/>
-                    <rect class="win" x="1268" y="240" width="5" height="7"/>
-                    <rect class="win" x="115" y="210" width="5" height="6"/>
-                    <rect class="win" x="392" y="195" width="5" height="6"/>
-                    <rect class="win" x="742" y="200" width="5" height="6"/>
-                    <rect class="win" x="1142" y="190" width="5" height="6"/>
-                    <rect class="win" x="1400" y="190" width="5" height="6"/>
-                    <rect class="win" x="60"  y="180" width="5" height="6"/>
-                    <rect class="win" x="170" y="150" width="5" height="6"/>
-                    <rect class="win" x="580" y="140" width="5" height="6"/>
-                </g>
-            </svg>
-        </div>
-        <div class="lake" aria-hidden="true"></div>
     </div>
 
-    <!-- ============ CHICAGO FLAG ============ -->
-    <div class="flag" aria-label="Flag of Chicago">
-        <div class="inner">
-            <div class="stripe"></div>
-            <div class="field">✶ ✶ ✶ ✶</div>
-            <div class="stripe"></div>
-        </div>
-    </div>
-
-    <!-- ============ ROUTE ============ -->
-    <div class="route wrap">
-        <div class="route-line" aria-hidden="true"></div>
-        <div class="train" aria-hidden="true"></div>
-
-        <section class="station s-profile">
-            <h2><span class="line-chip">Red Line</span> 01 · Profile</h2>
-            <h3>Software Engineer I</h3>
-            <p>Building <strong>agentic AI systems</strong> on the Commercial Payments team at <strong>JPMorgan Chase</strong>. Shipping pragmatic AI — no hype, just working software.</p>
-        </section>
-
-        <section class="station s-projects">
-            <h2><span class="line-chip" style="background:var(--cta-blue)">Blue Line</span> 02 · Projects</h2>
-            <div class="entry">
-                <h3><a href="./tracemark/" style="color:inherit;text-decoration:none;border-bottom:1px solid var(--flag-blue);">TraceMark ↗</a> <small style="font-weight:400;color:var(--muted);font-size:0.72rem;">· <a href="https://github.com/colesnic/trace-mark" target="_blank" rel="noopener" style="color:var(--flag-blue);text-decoration:none;">source ↗</a></small></h3>
-                <p>Post-generation linguistic fingerprinting for LLM-generated text. Tested across 518K+ real documents.</p>
-                <div class="tags"><span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">NLP</span><span class="tag">Cryptography</span><span class="tag">Stats</span></div>
-            </div>
-            <div class="entry">
-                <h3>Wiki Ra(i)ce</h3>
-                <p>Race an AI agent through Wikipedia, link by link. May the best navigator win.</p>
-                <div class="tags"><span class="tag">AI</span><span class="tag">Python</span></div>
-            </div>
-            <div class="entry">
-                <h3>Small Business Consultant</h3>
-                <p>Helped a law firm put LLMs to work automating legal processes.</p>
-                <div class="tags"><span class="tag">Prompt Engineering</span><span class="tag">Strategy</span></div>
-            </div>
-        </section>
-
-        <section class="station s-exp">
-            <h2><span class="line-chip" style="background:var(--cta-green)">Green Line</span> 03 · Experience</h2>
-            <div class="entry">
-                <h3>JPMorgan Chase</h3>
-                <p>Software Engineer I · 2024 — Present</p>
-            </div>
-            <div class="entry">
-                <h3>University of Michigan</h3>
-                <p>Computer Science · Zeta Pi Tech Fraternity</p>
-            </div>
-        </section>
-
-        <section class="station s-connect">
-            <h2><span class="line-chip" style="background:var(--cta-purple)">Purple Line</span> 04 · Connect</h2>
-            <h3>Say hi</h3>
-            <p>Always up for talking AI, payments, or where to get the best Italian beef.</p>
-            <a class="btn" href="mailto:colesnic@umich.edu">colesnic@umich.edu</a>
-        </section>
+    <!-- ============ CARDS ============ -->
+    <div class="cards wrap">
+        <a class="card" href="./resume.html" style="--card-color:#009b3a">
+            <span class="icon">📄</span>
+            <h3>Resume</h3>
+            <p>Download or print a one-page rundown of experience, projects and skills.</p>
+            <span class="go">Download resume ↗</span>
+        </a>
+        <a class="card" href="https://www.linkedin.com/in/colesnic" target="_blank" rel="noopener" style="--card-color:#00a1de">
+            <span class="icon">🔗</span>
+            <h3>LinkedIn</h3>
+            <p>Work history, recommendations and what I'm building next.</p>
+            <span class="go">Visit LinkedIn ↗</span>
+        </a>
+        <a class="card" href="./tracemark/" style="--card-color:#41b6e6">
+            <span class="icon">λ</span>
+            <h3>TraceMark</h3>
+            <p>Post-generation linguistic fingerprinting for LLM text — tested on 518K+ documents.</p>
+            <span class="go">View the project ↗</span>
+        </a>
     </div>
 
     <footer>
