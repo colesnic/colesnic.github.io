@@ -452,13 +452,17 @@ function initAttributionExplorer() {
 
 function initScrollAnimations() {
   if (prefersReduced || !("IntersectionObserver" in window)) {
-    $$(".section").forEach((s) => s.classList.add("visible"));
+    $$(".section").forEach((s) => {
+      s.classList.remove("reveal-pending");
+      s.classList.add("visible");
+    });
     return;
   }
   $$(".section").forEach((s) => s.classList.add("reveal-pending"));
   const io = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
+        entry.target.classList.remove("reveal-pending");
         entry.target.classList.add("visible");
         io.unobserve(entry.target);
       }
@@ -470,7 +474,10 @@ function initScrollAnimations() {
 function applyReducedMotionMode() {
   if (prefersReduced) {
     // final states set immediately
-    $$(".section").forEach((s) => s.classList.add("visible"));
+    $$(".section").forEach((s) => {
+      s.classList.remove("reveal-pending");
+      s.classList.add("visible");
+    });
     const synth = DATA.opportunityDensity.synthetic;
     $$("#density-bars .bar-fill").forEach((b) => {
       const widths = { "13.4": 100, "1.25": (1.25 / synth) * 100, "1.96": (1.96 / synth) * 100 };
