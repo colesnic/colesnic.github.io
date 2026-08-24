@@ -508,7 +508,6 @@ html.no-js .bar-fill { width: 100%; }
     transition-duration: 0.001ms !important;
   }
   .section { opacity: 1; transform: none; }
-  .bar-fill, .exp-gauge-fill, .cand-bar { width: var(--final, 0) !important; }
 }
 
 /* ---------- responsive ---------- */
