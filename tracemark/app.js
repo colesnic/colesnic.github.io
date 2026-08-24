@@ -282,9 +282,9 @@ async function runDetectorAnimation() {
   detector.classList.add("on");
   result.innerHTML = "";
 
-  // observed bits from the demo fingerprint
+  // observed bits from the demo fingerprint (in visible paragraph order)
   const emp = DATA.demoEmployees[empKey];
-  const oppIds = ["contraction-1", "quote-1", "contraction-2", "serial-1", "dash-1", "ellipsis-1", "apostrophe-1", "quote-2"];
+  const oppIds = oppElements().map((el) => el.dataset.opp);
   const obs = [];
   for (const id of oppIds) obs.push(await hmacBit(emp.secret, id));
 
