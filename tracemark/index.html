@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TraceMark — Linguistic Fingerprinting for LLM Text | Nick Coles</title>
+<meta name="description" content="TraceMark is an experiment in post-generation cryptographic fingerprinting for LLM-generated text, tested across more than 500,000 real-world documents.">
+<meta property="og:title" content="TraceMark — Linguistic Fingerprinting for LLM Text">
+<meta property="og:description" content="Can plain English carry a cryptographic fingerprint? TraceMark embeds keyed statistical fingerprints into completed LLM responses, tested across 518K+ real documents.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://nickcoles.com/tracemark/">
+<meta name="theme-color" content="#0a0e14">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="crumb" aria-label="Breadcrumb">
+  <a href="../">← Nick Coles</a><span>/</span><a href="../#projects">Projects</a><span>/</span><span class="here">TraceMark</span>
+</nav>
+
+<main id="main">
+
+  <!-- ============ HERO ============ -->
+  <header class="hero">
+    <p class="eyebrow mono">TRACEMARK · POST-GENERATION LLM FORENSICS</p>
+    <h1 class="hero-title">Can plain English carry a <span class="accent">cryptographic</span> fingerprint?</h1>
+    <p class="hero-sub">TraceMark explores employee-level forensic attribution for LLM-generated text.</p>
+    <p class="hero-desc">A model-agnostic Python gateway that embeds keyed statistical fingerprints into completed LLM responses using meaning-preserving linguistic choices.</p>
+
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#core-idea">See how it works ↓</a>
+      <a class="btn btn-ghost" href="https://github.com/colesnic/trace-mark" target="_blank" rel="noopener">View source ↗</a>
+    </div>
+
+    <!-- hero live transformation demo -->
+    <div class="hero-demo" id="hero-demo" aria-live="polite">
+      <div class="hero-demo-caption mono" id="hero-demo-caption">DEMO · a secret key decides each choice</div>
+
+      <div class="keyline" aria-hidden="true">
+        <span class="keyline-label mono">EMPLOYEE KEY</span>
+        <span class="keyline-bits mono" id="keyline-bits">1&nbsp;0&nbsp;1&nbsp;1&nbsp;0&nbsp;1</span>
+        <span class="keyline-arrow">↓</span>
+      </div>
+
+      <div class="sentence mono" id="hero-sentence">We reviewed revenue, expenses and liabilities.</div>
+      <div class="hero-note" id="hero-note"></div>
+
+      <div class="hero-controls">
+        <button class="btn btn-small" id="hero-replay" type="button">Replay</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ THE CORE IDEA ============ -->
+  <section class="section" id="core-idea">
+    <h2 class="section-title">The model never needs to know.</h2>
+    <p class="prose">Most text-watermarking techniques operate <strong>while a model generates tokens</strong>.
+    TraceMark instead operates on the <strong>completed response</strong>.
+    That makes the watermark layer provider-agnostic — OpenAI, Claude and DeepSeek all work unchanged.</p>
+
+    <div class="pipeline" id="pipeline" aria-label="Post-generation watermarking pipeline">
+      <div class="stage" data-stage="employee"><span class="stage-icon">👤</span><div><b>Employee</b><small>secret fingerprint key</small></div></div>
+      <div class="flow" aria-hidden="true">→</div>
+      <div class="stage" data-stage="app"><span class="stage-icon">📄</span><div><b>Application</b><small>calls the LLM through TraceMark</small></div></div>
+      <div class="flow" aria-hidden="true">→</div>
+      <div class="stage" data-stage="llm"><span class="stage-icon">🤖</span><div><b>GPT / Claude / DeepSeek</b><small>unmodified provider</small></div></div>
+      <div class="flow" aria-hidden="true">→</div>
+      <div class="stage stage-active" data-stage="tm"><span class="stage-icon">⚙️</span><div><b>TraceMark</b><small>finds safe linguistic choices · picks bits</small></div></div>
+      <div class="flow" aria-hidden="true">→</div>
+      <div class="stage" data-stage="final"><span class="stage-icon">✅</span><div><b>Final text</b><small>fingerprinted response</small></div></div>
+    </div>
+    <div class="pipeline-caption mono" id="pipeline-caption">No model logits. No provider modification. Post-generation only.</div>
+  </section>
+
+  <!-- ============ FINGERPRINT DEMO ============ -->
+  <section class="section" id="fingerprint-demo">
+    <h2 class="section-title">Same meaning. Different fingerprint.</h2>
+    <p class="prose">Two secret keys make different <em>tiny</em> choices at the same places. The text stays natural either way — but the pattern is unique per employee.</p>
+
+    <div class="demo-controls" role="group" aria-label="Choose a demonstration employee">
+      <button class="seg seg-on" id="emp-a" type="button" aria-pressed="true">Fingerprint A</button>
+      <button class="seg" id="emp-b" type="button" aria-pressed="false">Fingerprint B</button>
+      <label class="toggle"><input type="checkbox" id="show-bits"> Show fingerprint bits</label>
+    </div>
+
+    <div class="demo-stage">
+      <div class="bits-strip mono" id="bits-strip" aria-hidden="true"></div>
+      <p class="demo-text" id="demo-text">
+        We <span class="opp" data-opp="contraction-1" data-type="CONTRACTION" data-zero="do not" data-one="don't">do not</span> believe the
+        <span class="opp" data-opp="quote-1" data-type="QUOTE" data-zero="&quot;forecast&quot;" data-one="&ldquo;forecast&rdquo;">"forecast"</span> is realistic, and we
+        <span class="opp" data-opp="contraction-2" data-type="CONTRACTION" data-zero="will not" data-one="won't">will not</span> accept the plan.
+        The proposal covers <span class="opp" data-opp="serial-1" data-type="SERIAL COMMA" data-zero="revenue, expenses and liabilities" data-one="revenue, expenses, and liabilities">revenue, expenses and liabilities</span>
+        <span class="opp" data-opp="dash-1" data-type="DASH" data-zero=" — " data-one="&mdash;"> — </span> it really is a balanced budget.
+        The manager said<span class="opp" data-opp="ellipsis-1" data-type="ELLIPSIS" data-zero="..." data-one="&hellip;">...</span>
+        <span class="opp" data-opp="quote-2" data-type="QUOTE" data-zero="&quot;The company's forecast was rejected.&quot;" data-one="&ldquo;The company&rsquo;s forecast was rejected.&rdquo;">"The company's forecast was rejected."</span>
+      </p>
+      <p class="demo-caption mono">Interactive visualization. The production implementation uses the Python TraceMark NLP and detection engine.</p>
+    </div>
+  </section>
+
+  <!-- ============ DETECTION STORY ============ -->
+  <section class="section" id="detection">
+    <h2 class="section-title mono time-jump">// THREE MONTHS LATER</h2>
+    <p class="prose">The watermarked text gets copied, pasted, re-saved, sent. Metadata dies. The text survives.</p>
+
+    <div class="doc-card mono" id="doc-card">
+      <div class="doc-head">REPORT · EXTERNAL DOCUMENT</div>
+      <p id="doc-copied">"We don't believe the "forecast" is realistic, and we won't accept the plan. The proposal covers revenue, expenses, and liabilities — ..."</p>
+    </div>
+
+    <p class="prose center">The metadata is gone. <strong>The linguistic choices remain.</strong></p>
+
+    <div class="center"><button class="btn btn-primary" id="scan-btn" type="button">SCAN FINGERPRINT</button></div>
+
+    <!-- detector animation -->
+    <div class="detector" id="detector" aria-live="polite">
+      <div class="det-row"><span class="det-label mono">OBSERVED CHOICES</span><span class="det-bits mono" id="det-observed">· · · · · · · ·</span></div>
+      <div class="det-cands" id="det-cands" aria-label="Candidate fingerprint scores"></div>
+      <div class="det-result" id="det-result" aria-live="polite"></div>
+      <p class="demo-caption mono">Illustrative detector walkthrough — the real benchmark statistics appear below.</p>
+    </div>
+  </section>
+
+  <!-- ============ STATISTICAL EXPLANATION ============ -->
+  <section class="section" id="statistics">
+    <h2 class="section-title">Attribution is a statistics problem, not a magic string.</h2>
+    <p class="prose">An unrelated fingerprint should match roughly half of the linguistic choices by chance.
+    The correct fingerprint should match substantially more.</p>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-card-title mono">RANDOM CANDIDATE</div>
+        <div class="bit-row mono">0 1 1 0 0 1 0 1</div>
+        <div class="tick-row mono">✓ ✕ ✓ ✕ ✕ ✓ ✕ ✓</div>
+        <div class="stat-big">≈ 50%</div>
+      </div>
+      <div class="stat-card stat-card-good">
+        <div class="stat-card-title mono">CORRECT CANDIDATE</div>
+        <div class="bit-row mono">1 0 1 1 0 1 1 0</div>
+        <div class="tick-row mono good">✓ ✓ ✓ ✓ ✓ ✓ ✓ ✓</div>
+        <div class="stat-big good">≈ 100%</div>
+      </div>
+    </div>
+
+    <details class="underhood">
+      <summary>Under the hood</summary>
+      <ul class="mono underhood-list">
+        <li>HMAC-SHA256</li>
+        <li>HKDF-SHA256</li>
+        <li>sentence-local opportunity IDs</li>
+        <li>binomial significance testing</li>
+        <li>Bonferroni multiple-testing correction</li>
+      </ul>
+    </details>
+  </section>
+
+  <!-- ============ RESEARCH RESULT ============ -->
+  <section class="section" id="research">
+    <h2 class="section-title">Then I tested the assumption against real text.</h2>
+    <p class="prose">A demo on hand-written sentences is easy. Real text is not. I ran the full pipeline over five hundred thousand real documents.</p>
+
+    <div class="big-counter mono" id="counter-docs">0</div>
+    <div class="counter-label">real documents analyzed</div>
+
+    <div class="corpus-grid">
+      <div class="corpus-card">
+        <div class="corpus-num mono" data-count="415671">0</div>
+        <div class="corpus-name">Enron business emails</div>
+      </div>
+      <div class="corpus-card">
+        <div class="corpus-num mono" data-count="85431">0</div>
+        <div class="corpus-name">HC3 QA responses</div>
+      </div>
+      <div class="corpus-card">
+        <div class="corpus-num mono" data-count="17429">0</div>
+        <div class="corpus-name">20 Newsgroups posts</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CAPACITY REVEAL ============ -->
+  <section class="section" id="capacity">
+    <h2 class="section-title">The capacity reveal.</h2>
+    <p class="prose">Synthetic demo text was far more "watermarkable" than reality. Safe linguistic choices per 100 words:</p>
+
+    <div class="bars" id="density-bars" role="img" aria-label="Opportunity density comparison bar chart">
+      <div class="bar-row">
+        <div class="bar-label mono">SYNTHETIC</div>
+        <div class="bar-track"><div class="bar-fill bar-synthetic" data-w="13.4"></div></div>
+        <div class="bar-val mono" id="density-synthetic">13.4 / 100</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label mono">ENRON</div>
+        <div class="bar-track"><div class="bar-fill bar-real" data-w="1.25"></div></div>
+        <div class="bar-val mono" id="density-enron">1.25 / 100</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label mono">HC3</div>
+        <div class="bar-track"><div class="bar-fill bar-real" data-w="1.96"></div></div>
+        <div class="bar-val mono" id="density-hc3">1.96 / 100</div>
+      </div>
+    </div>
+
+    <p class="prose lead">Real text was roughly <strong>10× less watermarkable</strong> than the initial synthetic benchmark suggested.</p>
+    <p class="prose">The cryptographic and statistical mechanism worked. Natural language simply offered far fewer safe encoding opportunities than expected.</p>
+  </section>
+
+  <!-- ============ ENRON REALITY CHECK ============ -->
+  <section class="section" id="enron">
+    <h2 class="section-title">The Enron reality check.</h2>
+    <div class="reality-grid">
+      <div class="reality-card">
+        <div class="reality-big mono">1</div>
+        <p class="reality-label">usable watermark opportunity<br>in the median Enron email</p>
+      </div>
+      <div class="reality-card">
+        <div class="reality-big mono">3.6%</div>
+        <p class="reality-label">of Enron emails reached the original<br>20-opportunity evidence threshold</p>
+      </div>
+      <div class="reality-card">
+        <div class="reality-big mono">1,500–2,000</div>
+        <p class="reality-label">words most documents need<br>before enough signal exists</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ATTRIBUTION EXPLORER ============ -->
+  <section class="section" id="explorer">
+    <h2 class="section-title">How much text does attribution need?</h2>
+    <p class="prose">Drag the two controls — the numbers are the measured attribution accuracy from the V2 benchmark.</p>
+
+    <div class="explorer-controls">
+      <fieldset class="control">
+        <legend class="mono">DOCUMENT LENGTH</legend>
+        <div class="seg-group" id="words-seg" role="group" aria-label="Document length">
+          <button class="seg" data-value="500" type="button">500</button>
+          <button class="seg" data-value="1000" type="button">1,000</button>
+          <button class="seg seg-on" data-value="1500" type="button">1,500</button>
+          <button class="seg" data-value="2000" type="button">2,000</button>
+        </div>
+      </fieldset>
+      <fieldset class="control">
+        <legend class="mono">CANDIDATE EMPLOYEES</legend>
+        <div class="seg-group" id="cands-seg" role="group" aria-label="Candidate population">
+          <button class="seg" data-value="10" type="button">10</button>
+          <button class="seg" data-value="100" type="button">100</button>
+          <button class="seg" data-value="1000" type="button">1,000</button>
+          <button class="seg seg-on" data-value="10000" type="button">10,000</button>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="explorer-result" aria-live="polite">
+      <div class="exp-big mono"><span id="exp-words">2,000</span> words · <span id="exp-cands">10,000</span> employees</div>
+      <div class="exp-gauge"><div class="exp-gauge-fill" id="exp-fill"></div></div>
+      <div class="exp-value mono" id="exp-value">80%</div>
+      <div class="exp-note mono">measured attribution accuracy</div>
+    </div>
+    <p class="demo-caption mono">Measured on the V2 benchmark. Not a theoretical product claim.</p>
+  </section>
+
+  <!-- ============ WHAT HELD UP ============ -->
+  <section class="section" id="held-up">
+    <h2 class="section-title">The statistics held up.</h2>
+    <div class="findings-grid">
+      <div class="finding">
+        <div class="finding-title mono">NULL MODEL</div>
+        <div class="finding-big">20 / 20</div>
+        <p>Binomial(0.5) null confirmed across every tested configuration.</p>
+      </div>
+      <div class="finding">
+        <div class="finding-title mono">INDEPENDENCE</div>
+        <div class="finding-big mono">φ ≈ −0.01</div>
+        <p>Match indicators are effectively uncorrelated.</p>
+      </div>
+      <div class="finding">
+        <div class="finding-title mono">AUTHOR STYLE</div>
+        <div class="finding-big">0.500</div>
+        <p>Across 113 Enron authors, mean unrelated-fingerprint match.</p>
+      </div>
+      <div class="finding">
+        <div class="finding-title mono">FALSE ATTRIBUTION</div>
+        <div class="finding-big">0.27%</div>
+        <p>Adjusted-significant rate in the measured false-positive experiment.</p>
+      </div>
+    </div>
+    <p class="prose small">0.27% is a measured false-positive rate, not a 99.73% "accuracy" claim — those are not the same number. The honest Clopper-Pearson upper bound across benchmark configurations is roughly <strong>0.30–0.45%</strong>.</p>
+  </section>
+
+  <!-- ============ WHAT BROKE ============ -->
+  <section class="section" id="broke">
+    <h2 class="section-title">And the limits were just as important.</h2>
+    <div class="limits-grid">
+      <div class="limit">
+        <div class="limit-title mono">SPARSE CAPACITY</div>
+        <p>Real business language contains few safe transformations. The median Enron email had exactly one usable opportunity.</p>
+      </div>
+      <div class="limit">
+        <div class="limit-title mono">FRAGILE CHANNELS</div>
+        <div class="mini-bars">
+          <div class="mini-row"><span class="mini-label">apostrophes</span><div class="mini-track"><div class="mini-fill" style="width:42%"></div></div><span class="mini-val mono">~42%</span></div>
+          <div class="mini-row"><span class="mini-label">quotes</span><div class="mini-track"><div class="mini-fill" style="width:33%"></div></div><span class="mini-val mono">~33%</span></div>
+        </div>
+        <p>Apostrophes + quotes contributed ~75% of observed capacity — and typography normalization removes them.</p>
+      </div>
+      <div class="limit">
+        <div class="limit-title mono">BOILERPLATE COLLISIONS</div>
+        <div class="finding-big mono">~11%</div>
+        <p>Opportunity-ID collision rate. Common phrases create the same linguistic opportunity across many documents.</p>
+      </div>
+    </div>
+
+    <div class="canonicalization">
+      <span class="experimental mono">EXPERIMENTAL</span>
+      <p><strong>Case-insensitive canonicalization</strong> roughly doubled lowercase-attack survival without hurting clean detection. Documented, not necessarily deployed — the tradeoff is under evaluation.</p>
+    </div>
+  </section>
+
+  <!-- ============ UNDER THE HOOD ============ -->
+  <section class="section" id="engineering">
+    <h2 class="section-title">Under the hood</h2>
+
+    <div class="stack" aria-label="Technology stack">
+      <span class="chip">Python 3.12</span><span class="chip">FastAPI</span><span class="chip">spaCy</span>
+      <span class="chip">SQLAlchemy</span><span class="chip">PostgreSQL</span><span class="chip">SQLite</span>
+      <span class="chip">HMAC-SHA256</span><span class="chip">HKDF-SHA256</span><span class="chip">Pytest</span>
+      <span class="chip">Hypothesis</span><span class="chip">httpx</span><span class="chip">OpenAI-compatible adapters</span><span class="chip">Anthropic adapter</span>
+    </div>
+
+    <div class="arch" aria-label="TraceMark architecture">
+      <div class="arch-col">
+        <div class="arch-title mono">ENCODING PATH</div>
+        <div class="arch-node">LLM Provider</div>
+        <div class="arch-flow mono" aria-hidden="true">↓ raw response</div>
+        <div class="arch-node">Protected Span Detection</div>
+        <div class="arch-flow mono" aria-hidden="true">↓</div>
+        <div class="arch-node">spaCy Opportunity Extraction</div>
+        <div class="arch-flow mono" aria-hidden="true">↓ employee secret</div>
+        <div class="arch-node arch-node-hot">HMAC / HKDF · Expected Bits</div>
+        <div class="arch-flow mono" aria-hidden="true">↓</div>
+        <div class="arch-node">Linguistic Variant Selection</div>
+        <div class="arch-flow mono" aria-hidden="true">↓</div>
+        <div class="arch-node arch-node-final">Final response</div>
+      </div>
+      <div class="arch-col">
+        <div class="arch-title mono">DETECTION PATH</div>
+        <div class="arch-node">Suspect text</div>
+        <div class="arch-flow mono" aria-hidden="true">↓</div>
+        <div class="arch-node">decode opportunities</div>
+        <div class="arch-flow mono" aria-hidden="true">↓</div>
+        <div class="arch-node">score candidate keys</div>
+        <div class="arch-flow mono" aria-hidden="true">↓</div>
+        <div class="arch-node">binomial evidence</div>
+        <div class="arch-flow mono" aria-hidden="true">↓</div>
+        <div class="arch-node arch-node-final">best fingerprint</div>
+      </div>
+    </div>
+
+    <div class="metrics">
+      <div class="metric"><div class="metric-num mono">518,531+</div><div class="metric-label">real documents analyzed</div></div>
+      <div class="metric"><div class="metric-num mono">10,000</div><div class="metric-label">candidate fingerprints benchmarked</div></div>
+      <div class="metric"><div class="metric-num mono">&lt;100 ms</div><div class="metric-label">processing at ~1,000 words</div></div>
+      <div class="metric"><div class="metric-num mono">~0.3–0.65 s</div><div class="metric-label">10,000-candidate scoring per document</div></div>
+    </div>
+    <p class="demo-caption mono">All metrics are benchmark measurements from the V2 research sprint.</p>
+  </section>
+
+  <!-- ============ TAKEAWAY ============ -->
+  <section class="section" id="takeaway">
+    <h2 class="section-title">The experiment changed the conclusion.</h2>
+    <div class="columns">
+      <div class="column">
+        <div class="col-title mono">WHAT WORKED</div>
+        <ul>
+          <li>Cryptographic fingerprint derivation</li>
+          <li>Statistical differentiation</li>
+          <li>Author-style independence</li>
+          <li>Long clean-document attribution</li>
+          <li>Fast local processing</li>
+        </ul>
+      </div>
+      <div class="column">
+        <div class="col-title mono">WHAT DIDN'T</div>
+        <ul>
+          <li>Short-email attribution</li>
+          <li>High-density watermarking of real prose</li>
+          <li>Robustness to normalization</li>
+          <li>Adversarial rewriting</li>
+        </ul>
+      </div>
+      <div class="column">
+        <div class="col-title mono">WHAT I LEARNED</div>
+        <ul>
+          <li>A statistically valid algorithm can still fail because the underlying information channel is too sparse.</li>
+        </ul>
+        <p class="lesson">The bottleneck was language capacity, not cryptography.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FINAL ============ -->
+  <section class="section final">
+    <h2 class="section-title">Built to test the idea — not to prove it.</h2>
+    <p class="prose">TraceMark started as a question: <em>can post-generation language carry enough hidden information for employee-level forensic attribution?</em></p>
+    <p class="prose">The answer was nuanced. The fingerprint mechanism worked. Real-world linguistic capacity became the limiting factor.</p>
+
+    <div class="not-ai mono">
+      ⚠ TraceMark is <strong>not</strong> an AI detector. It can only detect fingerprints intentionally embedded by TraceMark — it cannot detect arbitrary ChatGPT, Claude, Gemini or DeepSeek output that never passed through it.
+    </div>
+
+    <div class="final-cta">
+      <a class="btn btn-primary" href="https://github.com/colesnic/trace-mark" target="_blank" rel="noopener">View TraceMark on GitHub ↗</a>
+      <a class="btn btn-ghost" href="../">Back to nickcoles.com</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <span class="mono">TRACEMARK · an experiment in post-generation linguistic forensics</span>
+</footer>
+
+<script src="./data.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>
