@@ -363,12 +363,19 @@ function animateCount(el, target, dur) {
 }
 
 function initResearchCounters() {
+  if (prefersReduced) {
+    $("#counter-docs").textContent = DATA.totalDocuments.toLocaleString();
+    $$(".corpus-num").forEach((el) => {
+      el.textContent = parseInt(el.dataset.count, 10).toLocaleString();
+    });
+    return;
+  }
   const io = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
-        animateCount($("#counter-docs"), DATA.totalDocuments, prefersReduced ? 0 : 1400);
+        animateCount($("#counter-docs"), DATA.totalDocuments, 1400);
         $$(".corpus-num").forEach((el) => {
-          animateCount(el, parseInt(el.dataset.count, 10), prefersReduced ? 0 : 900);
+          animateCount(el, parseInt(el.dataset.count, 10), 900);
         });
         io.disconnect();
       }
@@ -444,6 +451,11 @@ function initAttributionExplorer() {
    ========================================================================== */
 
 function initScrollAnimations() {
+  if (prefersReduced || !("IntersectionObserver" in window)) {
+    $$(".section").forEach((s) => s.classList.add("visible"));
+    return;
+  }
+  $$(".section").forEach((s) => s.classList.add("reveal-pending"));
   const io = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {

@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>document.documentElement.classList.remove("no-js");</script>
 <title>TraceMark — Linguistic Fingerprinting for LLM Text | Nick Coles</title>
 <meta name="description" content="TraceMark is an experiment in post-generation cryptographic fingerprinting for LLM-generated text, tested across more than 500,000 real-world documents.">
 <meta property="og:title" content="TraceMark — Linguistic Fingerprinting for LLM Text">
@@ -92,8 +93,8 @@
         <span class="opp" data-opp="contraction-2" data-type="CONTRACTION" data-zero="will not" data-one="won't">will not</span> accept the plan.
         The proposal covers <span class="opp" data-opp="serial-1" data-type="SERIAL COMMA" data-zero="revenue, expenses and liabilities" data-one="revenue, expenses, and liabilities">revenue, expenses and liabilities</span>
         <span class="opp" data-opp="dash-1" data-type="DASH" data-zero=" — " data-one="&mdash;"> — </span> it really is a balanced budget.
-        The manager said<span class="opp" data-opp="ellipsis-1" data-type="ELLIPSIS" data-zero="..." data-one="&hellip;">...</span>
-        <span class="opp" data-opp="quote-2" data-type="QUOTE" data-zero="&quot;The company's forecast was rejected.&quot;" data-one="&ldquo;The company&rsquo;s forecast was rejected.&rdquo;">"The company's forecast was rejected."</span>
+        The <span class="opp" data-opp="apostrophe-1" data-type="APOSTROPHE" data-zero="manager's" data-one="manager&rsquo;s">manager's</span> review said<span class="opp" data-opp="ellipsis-1" data-type="ELLIPSIS" data-zero="..." data-one="&hellip;">...</span>
+        <span class="opp" data-opp="quote-2" data-type="QUOTE" data-zero="&quot;We cannot approve this today.&quot;" data-one="&ldquo;We cannot approve this today.&rdquo;">"We cannot approve this today."</span>
       </p>
       <p class="demo-caption mono">Interactive visualization. The production implementation uses the Python TraceMark NLP and detection engine.</p>
     </div>
