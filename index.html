@@ -30,6 +30,8 @@
 
     html { scroll-behavior: smooth; }
 
+    html, body { height: 100%; }
+
     body {
         background:
             radial-gradient(1200px 600px at 70% -10%, #16263f 0%, transparent 60%),
@@ -38,7 +40,9 @@
         font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
         line-height: 1.6;
         overflow-x: hidden;
-        min-height: 100vh;
+        overflow: hidden;
+        height: 100vh;
+        height: 100dvh;
         display: flex;
         flex-direction: column;
     }
@@ -50,27 +54,28 @@
     /* ============ HERO ============ */
     .hero {
         position: relative;
+        flex: 1 1 auto;
+        min-height: 0;
         display: flex;
         align-items: center;
-        min-height: 86vh;
-        padding: 12vh 0 6vh;
+        padding: 3vh 0 1.5vh;
     }
 
     .locator {
         display: flex;
         align-items: center;
         gap: 12px;
-        font-size: 0.78rem;
+        font-size: clamp(0.6rem, 1.6vh, 0.78rem);
         letter-spacing: 0.28em;
         text-transform: uppercase;
         color: var(--flag-blue-soft);
     }
 
-    .stars { color: var(--flag-red); font-size: 1rem; letter-spacing: 0.35em; }
+    .stars { color: var(--flag-red); font-size: 0.85rem; letter-spacing: 0.35em; }
 
     h1 {
-        margin-top: 22px;
-        font-size: clamp(3rem, 10vw, 7rem);
+        margin-top: clamp(8px, 2.2vh, 22px);
+        font-size: clamp(2.3rem, min(9.5vw, 8.5vh), 6.5rem);
         font-weight: 800;
         letter-spacing: -0.03em;
         line-height: 1.0;
@@ -79,8 +84,8 @@
     h1 .blue { color: var(--flag-blue); }
 
     .role {
-        margin-top: 18px;
-        font-size: clamp(1rem, 2.4vw, 1.3rem);
+        margin-top: clamp(8px, 1.8vh, 18px);
+        font-size: clamp(0.85rem, min(2vw, 2.2vh), 1.3rem);
         color: var(--muted);
         max-width: 560px;
     }
@@ -88,12 +93,12 @@
 
     /* CTA-style arrival board */
     .board {
-        margin-top: 38px;
+        margin-top: clamp(10px, 2.6vh, 34px);
         display: inline-block;
         background: #0b0e14;
         border: 1px solid #243049;
         border-radius: 10px;
-        padding: 14px 20px;
+        padding: 12px 18px;
         box-shadow: 0 12px 36px rgba(0,0,0,0.45), inset 0 0 24px rgba(0,0,0,0.6);
     }
 
@@ -168,17 +173,18 @@
     /* ============ CARDS ============ */
     .cards {
         display: flex;
-        gap: 16px;
-        flex-wrap: wrap;
-        padding-bottom: 10vh;
+        gap: 14px;
+        flex-wrap: nowrap;
+        padding: 0 0 2vh;
     }
 
     .card {
-        flex: 1 1 240px;
+        flex: 1 1 0;
+        min-width: 0;
         background: linear-gradient(180deg, #142440 0%, var(--panel) 100%);
         border: 1px solid #22344f;
         border-radius: 14px;
-        padding: 24px;
+        padding: 18px 20px;
         text-decoration: none;
         color: inherit;
         display: block;
@@ -199,14 +205,14 @@
         box-shadow: 0 16px 36px rgba(0,0,0,0.45);
     }
 
-    .card .icon { font-size: 1.5rem; display: block; margin-bottom: 12px; }
-    .card h3 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; }
-    .card p { color: var(--muted); font-size: 0.9rem; margin-top: 6px; }
+    .card .icon { font-size: 1.3rem; display: block; margin-bottom: 8px; }
+    .card h3 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
+    .card p { color: var(--muted); font-size: 0.85rem; margin-top: 4px; }
     .card .go {
         display: inline-block;
-        margin-top: 14px;
+        margin-top: 10px;
         font-family: var(--mono, ui-monospace, monospace);
-        font-size: 0.72rem;
+        font-size: 0.7rem;
         letter-spacing: 0.14em;
         text-transform: uppercase;
         color: var(--flag-blue-soft);
@@ -214,11 +220,10 @@
 
     /* ============ FOOTER ============ */
     footer {
-        margin-top: auto;
         text-align: center;
-        padding: 20px 20px 48px;
+        padding: 0.5vh 20px 1.5vh;
         color: var(--muted);
-        font-size: 0.72rem;
+        font-size: 0.68rem;
         letter-spacing: 0.18em;
         text-transform: uppercase;
     }
@@ -226,8 +231,23 @@
     /* ============ MOBILE ============ */
     @media (max-width: 760px) {
         .board .row { white-space: normal; }
-        .hero { min-height: 0; padding-top: 10vh; }
+        .card { padding: 14px 14px; }
+        .card .icon { font-size: 1.1rem; margin-bottom: 4px; }
+        .card h3 { font-size: 0.92rem; }
+        .card p { font-size: 0.72rem; margin-top: 2px; }
+        .card .go { font-size: 0.62rem; margin-top: 6px; }
     }
+
+    /* short viewports: compress so everything still fits with no scroll */
+    @media (max-height: 720px) {
+        .hero { padding-top: 2vh; }
+        h1 { font-size: clamp(1.9rem, min(9.5vw, 7.5vh), 4.5rem); }
+        .card { padding: 12px 14px; }
+        .card p { display: none; }
+        .card .icon { margin-bottom: 4px; }
+        footer { font-size: 0.6rem; padding-bottom: 1vh; }
+    }
+
 </style>
 </head>
 <body>
@@ -268,7 +288,7 @@
             <p>Download or print a one-page rundown of experience, projects and skills.</p>
             <span class="go">Download resume ↗</span>
         </a>
-        <a class="card" href="https://www.linkedin.com/in/colesnic" target="_blank" rel="noopener" style="--card-color:#00a1de">
+        <a class="card" href="https://www.linkedin.com/in/nicholas-coles-052176144/" target="_blank" rel="noopener" style="--card-color:#00a1de">
             <span class="icon">🔗</span>
             <h3>LinkedIn</h3>
             <p>Work history, recommendations and what I'm building next.</p>
