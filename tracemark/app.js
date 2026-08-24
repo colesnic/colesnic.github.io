@@ -166,7 +166,7 @@ async function runArchitectureAnimation() {
           caption.textContent = texts[i];
           await delay(650);
         }
-        caption.textContent = "No model logits. No provider modification. Post-generation only.";
+        caption.textContent = "Post-generation only — the model provider is never touched.";
       }
     });
   }, { threshold: 0.4 });

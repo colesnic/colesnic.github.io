@@ -73,7 +73,7 @@
       <div class="flow" aria-hidden="true">→</div>
       <div class="stage" data-stage="final"><span class="stage-icon">✅</span><div><b>Final text</b><small>fingerprinted response</small></div></div>
     </div>
-    <div class="pipeline-caption mono" id="pipeline-caption">No model logits. No provider modification. Post-generation only.</div>
+    <div class="pipeline-caption mono" id="pipeline-caption">Post-generation only — the model provider is never touched.</div>
   </section>
 
   <!-- ============ FINGERPRINT DEMO ============ -->
@@ -127,7 +127,7 @@
 
   <!-- ============ STATISTICAL EXPLANATION ============ -->
   <section class="section" id="statistics">
-    <h2 class="section-title">Attribution is a statistics problem, not a magic string.</h2>
+    <h2 class="section-title">Attribution is a statistics problem.</h2>
     <p class="prose">An unrelated fingerprint should match roughly half of the linguistic choices by chance.
     The correct fingerprint should match substantially more.</p>
 
@@ -147,7 +147,7 @@
     </div>
 
     <details class="underhood">
-      <summary>Under the hood</summary>
+      <summary>Detection math</summary>
       <ul class="mono underhood-list">
         <li>HMAC-SHA256</li>
         <li>HKDF-SHA256</li>
@@ -160,7 +160,7 @@
 
   <!-- ============ RESEARCH RESULT ============ -->
   <section class="section" id="research">
-    <h2 class="section-title">Then I tested the assumption against real text.</h2>
+    <h2 class="section-title">The synthetic benchmark was wrong.</h2>
     <p class="prose">A demo on hand-written sentences is easy. Real text is not. I ran the full pipeline over five hundred thousand real documents.</p>
 
     <div class="big-counter mono" id="counter-docs">0</div>
@@ -184,7 +184,7 @@
 
   <!-- ============ CAPACITY REVEAL ============ -->
   <section class="section" id="capacity">
-    <h2 class="section-title">The capacity reveal.</h2>
+    <h2 class="section-title">What real text actually contains</h2>
     <p class="prose">Synthetic demo text was far more "watermarkable" than reality. Safe linguistic choices per 100 words:</p>
 
     <div class="bars" id="density-bars" role="img" aria-label="Opportunity density comparison bar chart">
@@ -206,12 +206,12 @@
     </div>
 
     <p class="prose lead">Real text was roughly <strong>10× less watermarkable</strong> than the initial synthetic benchmark suggested.</p>
-    <p class="prose">The cryptographic and statistical mechanism worked. Natural language simply offered far fewer safe encoding opportunities than expected.</p>
+    <p class="prose">V2 broke my original assumption: real text had roughly 10× fewer usable transformations than the synthetic benchmark. The encoding and detection machinery behaved as designed.</p>
   </section>
 
   <!-- ============ ENRON REALITY CHECK ============ -->
   <section class="section" id="enron">
-    <h2 class="section-title">The Enron reality check.</h2>
+    <h2 class="section-title">415,671 Enron emails later</h2>
     <div class="reality-grid">
       <div class="reality-card">
         <div class="reality-big mono">1</div>
@@ -260,12 +260,12 @@
       <div class="exp-value mono" id="exp-value">80%</div>
       <div class="exp-note mono">measured attribution accuracy</div>
     </div>
-    <p class="demo-caption mono">Measured on the V2 benchmark. Not a theoretical product claim.</p>
+    <p class="demo-caption mono">Measured on the V2 benchmark.</p>
   </section>
 
   <!-- ============ WHAT HELD UP ============ -->
   <section class="section" id="held-up">
-    <h2 class="section-title">The statistics held up.</h2>
+    <h2 class="section-title">Null model confirmed</h2>
     <div class="findings-grid">
       <div class="finding">
         <div class="finding-title mono">NULL MODEL</div>
@@ -288,12 +288,12 @@
         <p>Adjusted-significant rate in the measured false-positive experiment.</p>
       </div>
     </div>
-    <p class="prose small">0.27% is a measured false-positive rate, not a 99.73% "accuracy" claim — those are not the same number. The honest Clopper-Pearson upper bound across benchmark configurations is roughly <strong>0.30–0.45%</strong>.</p>
+    <p class="prose small">Measured false-positive rate over unwatermarked Enron text. Clopper-Pearson upper bound: <strong>~0.30–0.45%</strong>.</p>
   </section>
 
   <!-- ============ WHAT BROKE ============ -->
   <section class="section" id="broke">
-    <h2 class="section-title">And the limits were just as important.</h2>
+    <h2 class="section-title">Where it broke</h2>
     <div class="limits-grid">
       <div class="limit">
         <div class="limit-title mono">SPARSE CAPACITY</div>
@@ -322,7 +322,7 @@
 
   <!-- ============ UNDER THE HOOD ============ -->
   <section class="section" id="engineering">
-    <h2 class="section-title">Under the hood</h2>
+    <h2 class="section-title">System architecture</h2>
 
     <div class="stack" aria-label="Technology stack">
       <span class="chip">Python 3.12</span><span class="chip">FastAPI</span><span class="chip">spaCy</span>
@@ -371,7 +371,7 @@
 
   <!-- ============ TAKEAWAY ============ -->
   <section class="section" id="takeaway">
-    <h2 class="section-title">The experiment changed the conclusion.</h2>
+    <h2 class="section-title">Where it actually works</h2>
     <div class="columns">
       <div class="column">
         <div class="col-title mono">WHAT WORKED</div>
@@ -393,20 +393,21 @@
         </ul>
       </div>
       <div class="column">
-        <div class="col-title mono">WHAT I LEARNED</div>
+        <div class="col-title mono">WHERE IT WORKS</div>
         <ul>
-          <li>A statistically valid algorithm can still fail because the underlying information channel is too sparse.</li>
+          <li>At 2,000 words: 80% attribution against 10,000 candidate fingerprints</li>
+          <li>At 500 words: 7%</li>
+          <li>The math holds; the channel is the constraint</li>
         </ul>
-        <p class="lesson">The bottleneck was language capacity, not cryptography.</p>
+        <p class="lesson">The bottleneck is channel capacity, not cryptography.</p>
       </div>
     </div>
   </section>
 
   <!-- ============ FINAL ============ -->
   <section class="section final">
-    <h2 class="section-title">Built to test the idea — not to prove it.</h2>
-    <p class="prose">TraceMark started as a question: <em>can post-generation language carry enough hidden information for employee-level forensic attribution?</em></p>
-    <p class="prose">The answer was nuanced. The fingerprint mechanism worked. Real-world linguistic capacity became the limiting factor.</p>
+    <h2 class="section-title">Next problem: channel capacity</h2>
+    <p class="prose">The fingerprinting and detection machinery behaved as expected. The unresolved problem is finding enough safe linguistic transformations in real text.</p>
 
     <div class="not-ai mono">
       ⚠ TraceMark is <strong>not</strong> an AI detector. It can only detect fingerprints intentionally embedded by TraceMark — it cannot detect arbitrary ChatGPT, Claude, Gemini or DeepSeek output that never passed through it.
